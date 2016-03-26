@@ -1,5 +1,7 @@
 package repertuar.model.multikino;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -7,14 +9,13 @@ import javafx.util.Pair;
 import repertuar.model.Cinema;
 import repertuar.model.Website;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
-/**
- * Created by anotender on 07.12.15.
- */
 public class MultikinoCinema extends Cinema {
 
     public MultikinoCinema(String name, String city, String website) {
@@ -22,67 +23,60 @@ public class MultikinoCinema extends Cinema {
     }
 
     @Override
-    public void loadDays() {
+    public void loadDays() throws IOException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
 
-        Website w = new Website(website.toString().substring(0, website.toString().length() - 2) + "#" + dateFormat.format(date));
-        w.loadContent(false);
+        Website website = new Website(
+                url.get().substring(0, url.get().length() - 2).replaceAll("wszystkie-kina", "repertuar")
+                        + "/" + dateFormat.format(date)
+        );
+        HtmlPage page = website.loadPageWithJavaScriptDisabled();
 
-        boolean isReadingDay = false;
+        List<DomElement> divElements = page.getElementsByTagName("div");
 
-        String dateString = null;
-        String dow = null;//day of week
-        String dom = null;//day of month
-        String mon = null;//month
-
-        for (String line : w.getContent()) {
-            if (!isReadingDay && line.contains("data-date")) {
-                isReadingDay = true;
-                dateString = line.substring(line.indexOf("data-date=\"") + "data-date=\"".length(), line.indexOf("\">"));
-            } else if (isReadingDay && line.contains("class=\"dow\"")) {
-                dow = line.replaceAll("<.*?>", "").trim();
-            } else if (isReadingDay && line.contains("day")) {
-                dom = line.replaceAll("<.*?>", "").trim();
-            } else if (isReadingDay && line.contains("mon")) {
-                mon = line.replaceAll("<.*?>", "").trim();
-                isReadingDay = false;
-
-                days.add(new Pair<>(dow + " " + dom + " " + mon + ":" + dateString, new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))));
+        for (DomElement divElement : divElements) {
+            if (divElement.hasAttribute("class") && divElement.getAttribute("class").equals("day-item")) {
+                String dateString = divElement.getTextContent().replaceAll("\n", "").trim().replaceAll("\\s+", " ");
+                days.add(
+                        new Pair<>(
+                                dateString + ":" + divElement.getAttribute("data-date"),
+                                new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
+                        )
+                );
             }
         }
     }
 
     @Override
-    public void loadFilms(int day, String date) {
+    public void loadFilms(int day, String date) throws IOException {
+        Website website = new Website(
+                url.get().substring(0, url.get().length() - 2).replaceAll("wszystkie-kina", "repertuar")
+                        + "/" + date.substring(date.indexOf(":") + 1)
+        );
+        HtmlPage page = website.loadPageWithJavaScriptDisabled();
 
-        Website w = new Website(website.toString() + "#" + date.substring(0, date.indexOf(":")));
-        w.loadContent(true);
+        List<DomElement> liElements = page.getElementsByTagName("li");
 
-        boolean isReadingHours = false;
-        String url = null, title = null;
-        LinkedList<Pair<SimpleStringProperty, Website>> hours = new LinkedList<>();
+        for (DomElement liElement : liElements) {
+            if (liElement.hasAttribute("class") && liElement.getAttribute("class").contains("genre-7")) {
+                LinkedList<Pair<SimpleStringProperty, Website>> hours = new LinkedList<>();
 
-        for (String line : w.getContent()) {
-            if (line.contains("cinema-overlay")) {
-                break;
-            }
-            if (line.contains("class=\"title\"")) {
-                line = line.trim();
-                url = "http://multikino.pl" + line.substring(line.indexOf("href=\"") + "href=\"".length(), line.indexOf("class") - 2);
-                title = line.replaceAll("<.*?>", "").trim();
-                continue;
-            }
-            if (!isReadingHours && line.contains("bt-event-right-col")) {
-                isReadingHours = true;
-            } else if (isReadingHours && line.trim().matches("[0-2][0-9]:[0-5][0-9]")) {
-                hours.add(new Pair<>(new SimpleStringProperty(line.trim()), null));
-            } else if (isReadingHours && line.contains("</div>")) {
-                days.get(day).getValue().add(new MultikinoFilm(title, url, hours));
-                hours.clear();
-                isReadingHours = false;
+                liElement.getElementsByTagName("a").forEach(htmlElement -> {
+                    if (htmlElement.getAttribute("class").equals("showing-popup-trigger active")) {
+                        hours.add(
+                                new Pair<>(
+                                        new SimpleStringProperty(htmlElement.getTextContent().trim()),
+                                        null//da sie to zrobic
+                                )
+                        );
+                    } else if (htmlElement.getAttribute("class").equals("title")) {
+                        String title = htmlElement.getTextContent().trim();
+                        String url = htmlElement.getAttribute("href");
+                        days.get(day).getValue().add(new MultikinoFilm(title, url, hours));
+                    }
+                });
             }
         }
-
     }
 }

@@ -7,9 +7,6 @@ import javafx.util.Pair;
 
 import java.util.LinkedList;
 
-/**
- * Created by mateu on 06.12.2015.
- */
 public abstract class Film {
 
     protected final SimpleStringProperty title;

@@ -3,11 +3,9 @@ package repertuar.model;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Created by anotender on 07.12.15.
- */
 public abstract class Chain {
 
     protected String name;
@@ -28,6 +26,6 @@ public abstract class Chain {
         return name;
     }
 
-    public abstract void loadCinemas();
+    public abstract void loadCinemas() throws IOException;
 
 }

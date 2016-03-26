@@ -1,12 +1,13 @@
 package repertuar.model.cinemaCity;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import repertuar.model.Chain;
 import repertuar.model.Website;
 
-/**
- * Created by mateu on 09.12.2015.
- */
+import java.io.IOException;
+import java.util.List;
+
 public class CinemaCity extends Chain {
 
     public CinemaCity(String name, Website website) {
@@ -14,18 +15,17 @@ public class CinemaCity extends Chain {
     }
 
     @Override
-    public void loadCinemas() {
-        Website w = new Website("http://www.cinema-city.pl/cinemas");
-        w.loadContent(false);
+    public void loadCinemas() throws IOException {
+        Website website = new Website("http://www.cinema-city.pl/cinemas");
 
-        for (String line : w.getContent()) {
-            if (line.contains("cinema_name")) {
-                line = line.trim();
-                line = line.replaceFirst("<.*?>", "");
+        HtmlPage page = website.loadPageWithJavaScriptDisabled();
 
-                String url = "http://www.cinema-city.pl/" + line.substring(line.indexOf("=\"") + 2, line.indexOf("\">"));
-                String city = StringEscapeUtils.unescapeHtml4(line.replaceAll("<.*?>", ""));
+        List<DomElement> divElements = page.getElementsByTagName("div");
 
+        for (DomElement divElement : divElements) {
+            if (divElement.hasAttribute("class") && divElement.getAttribute("class").equals("cinema_name")) {
+                String url = "http://www.cinema-city.pl/" + divElement.getElementsByTagName("a").get(0).getAttribute("href");
+                String city = divElement.getElementsByTagName("a").get(0).getTextContent();
                 cinemas.add(new CinemaCityCinema(null, city, url));
             }
         }

@@ -7,9 +7,6 @@ import repertuar.model.Website;
 
 import java.util.LinkedList;
 
-/**
- * Created by anotender on 07.12.15.
- */
 public class MultikinoFilm extends Film {
 
     public MultikinoFilm(String title, String url, LinkedList<Pair<SimpleStringProperty, Website>> hours) {

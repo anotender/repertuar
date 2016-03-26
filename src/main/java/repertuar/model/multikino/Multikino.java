@@ -1,10 +1,15 @@
 package repertuar.model.multikino;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import repertuar.model.Chain;
 import repertuar.model.Website;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by anotender on 07.12.15.
@@ -16,35 +21,18 @@ public class Multikino extends Chain {
     }
 
     @Override
-    public void loadCinemas() {
-        Website cinemasWebsite = new Website("https://multikino.pl/pl/nasze-kina");
-        cinemasWebsite.loadContent(false);
-        LinkedList<String> content = cinemasWebsite.getContent();
+    public void loadCinemas() throws IOException {
+        Website website = new Website("https://multikino.pl/pl/nasze-kina");
 
-        boolean isReadingCinemas = false;
+        HtmlPage page = website.loadPageWithJavaScriptDisabled();
 
-        for (String line : content) {
-            if (line.contains("cinemas-list")) {
-                isReadingCinemas = true;
-            } else if (isReadingCinemas && line.contains("div")) {
-                break;
-            } else if (isReadingCinemas && line.contains("href")) {
-                line = line.trim();
-                String url = "https://multikino.pl" + line.substring(line.indexOf("href=") + "href=".length() + 1, line.indexOf(">") - 1);
+        List<DomElement> elements = page.getElementsByTagName("a");
 
-                line = line.replaceAll("<.*?>", "");
-
-                String city;
-                String name = "Multikino";
-
-                if (line.indexOf(" ") >= 0) {
-                    city = line.substring(0, line.indexOf(" "));
-                    name += (" " + line.substring(line.indexOf(" ") + 1));
-                } else {
-                    city = line;
-                }
-
-                cinemas.add(new MultikinoCinema(name, city, url));
+        for (DomElement e : elements) {
+            if (e.hasAttribute("class") && e.getAttribute("class").equals("title")) {
+                String url = "https://multikino.pl" + e.getAttribute("href");
+                String city = e.getTextContent();
+                cinemas.add(new MultikinoCinema(null, city, url));
             }
         }
     }

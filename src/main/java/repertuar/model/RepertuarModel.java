@@ -8,9 +8,6 @@ import repertuar.model.multikino.Multikino;
 
 import java.util.LinkedList;
 
-/**
- * Created by mateu on 22.09.2015.
- */
 public class RepertuarModel {
 
     private final SimpleListProperty<Chain> chains;

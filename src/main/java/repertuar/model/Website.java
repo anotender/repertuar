@@ -1,35 +1,23 @@
 package repertuar.model;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Scanner;
 
-/**
- * Created by mateu on 24.09.2015.
- */
 public class Website {
-    private static final WebDriver DRIVER;
+    private static final WebClient WEB_CLIENT = new WebClient(BrowserVersion.CHROME);
 
     static {
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setJavascriptEnabled(true);
-        caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, "C:\\Users\\mateu\\Documents\\Projekty\\repertuar\\phantomjs.exe");
-        DRIVER = new PhantomJSDriver(caps);
+        WEB_CLIENT.getOptions().setCssEnabled(false);
+        WEB_CLIENT.getOptions().setGeolocationEnabled(false);
     }
 
-
-    private final String website;
-    private final LinkedList<String> content;
+    private final String url;
+    private HtmlPage loadedPage;
 
     public static boolean isInternetConnectionAvailible() {
         try {
@@ -40,56 +28,30 @@ public class Website {
         return true;
     }
 
-    public Website(String website) {
-        this.website = website;
-        this.content = new LinkedList<>();
+    public Website(String url) {
+        this.url = url;
     }
 
-    public void loadContent(boolean enableJavaScript) {
-        if (enableJavaScript) {
-            DRIVER.get(website);
-
-            JavascriptExecutor jse = (JavascriptExecutor) DRIVER;
-
-            String pageLoadStatus;
-            do {
-                pageLoadStatus = (String) jse.executeScript("return document.readyState");
-            } while (!pageLoadStatus.equals("complete"));
-
-            Collections.addAll(content, DRIVER.getPageSource().split("\n"));
-        } else {
-            Scanner in = null;
-            try {
-                URL url = new URL(website);
-                URLConnection connection = url.openConnection();
-
-                in = new Scanner(connection.getInputStream());
-
-                while (in.hasNextLine()) {
-                    content.add(in.nextLine());
-                }
-
-                in.close();
-            } catch (IOException e) {
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-            }
-        }
+    public HtmlPage loadPageWithJavaScriptEnabled() throws IOException {
+        WEB_CLIENT.getOptions().setJavaScriptEnabled(true);
+        loadedPage = WEB_CLIENT.getPage(url);
+        WEB_CLIENT.waitForBackgroundJavaScript(30 * 1000); /* will wait JavaScript to execute up to 30s */
+        return loadedPage;
     }
 
-    public LinkedList<String> getContent() {
-        return content;
+    public HtmlPage loadPageWithJavaScriptDisabled() throws IOException {
+        WEB_CLIENT.getOptions().setJavaScriptEnabled(false);
+        loadedPage = WEB_CLIENT.getPage(url);
+        return loadedPage;
     }
 
     public void open() throws Exception {
-        Desktop.getDesktop().browse(new URL(website).toURI());
+        Desktop.getDesktop().browse(new URL(url).toURI());
     }
 
     @Override
     public String toString() {
-        return website;
+        return url;
     }
 
 }

@@ -12,7 +12,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
@@ -98,7 +97,7 @@ public class RepertuarController {
         visitWebsite.setOnAction(event -> {
             try {
                 HeliosCinema cinema = (HeliosCinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-                cinema.getWebsite().open();
+                new Website(cinema.urlProperty().get()).open();
             } catch (Exception e) {
                 e.printStackTrace();
             }
