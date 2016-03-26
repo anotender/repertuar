@@ -18,8 +18,11 @@ import java.util.List;
 
 public class MultikinoCinema extends Cinema {
 
-    public MultikinoCinema(String name, String city, String website) {
+    private int cinemaNumber;
+
+    public MultikinoCinema(String name, String city, String website, int cinemaNumber) {
         super(name, city, website);
+        this.cinemaNumber = cinemaNumber;
     }
 
     @Override
@@ -64,10 +67,20 @@ public class MultikinoCinema extends Cinema {
 
                 liElement.getElementsByTagName("a").forEach(htmlElement -> {
                     if (htmlElement.getAttribute("class").equals("showing-popup-trigger active")) {
+                        String seanceUrl = "https://multikino.pl/kup-bilet2/";
+                        seanceUrl += htmlElement.getAttribute("data-eventid");
+                        seanceUrl += "/";
+                        seanceUrl += cinemaNumber;
+                        seanceUrl += "/";
+                        seanceUrl += htmlElement.getAttribute("datatype");
+                        seanceUrl += "/";
+                        seanceUrl += htmlElement.getAttribute("data-seanceid");
+                        seanceUrl += "/wybierz-miejsce";
+
                         hours.add(
                                 new Pair<>(
                                         new SimpleStringProperty(htmlElement.getTextContent().trim()),
-                                        null//da sie to zrobic
+                                        new Website(seanceUrl)
                                 )
                         );
                     } else if (htmlElement.getAttribute("class").equals("title")) {
