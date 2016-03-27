@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.util.Pair;
 import repertuar.model.Cinema;
+import repertuar.model.Film;
 import repertuar.model.Website;
 
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class MultikinoCinema extends Cinema {
                     } else if (htmlElement.getAttribute("class").equals("title")) {
                         String title = htmlElement.getTextContent().trim();
                         String url = htmlElement.getAttribute("href");
-                        days.get(day).getValue().add(new MultikinoFilm(title, url, hours));
+                        days.get(day).getValue().add(new Film(title, url, hours));
                     }
                 });
             }

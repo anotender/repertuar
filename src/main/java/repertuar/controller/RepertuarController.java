@@ -17,7 +17,6 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import repertuar.model.*;
 import repertuar.model.helios.HeliosCinema;
-import repertuar.model.helios.HeliosFilm;
 import repertuar.view.RepertuarView;
 
 import java.io.File;
@@ -49,7 +48,7 @@ public class RepertuarController {
         MenuItem save = new MenuItem("Save");
         save.setOnAction(event -> {
             HeliosCinema selectedCinema = (HeliosCinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-            HeliosFilm selectedFilm = (HeliosFilm) view.filmsListView().getSelectionModel().getSelectedItem();
+            Film selectedFilm = (Film) view.filmsListView().getSelectionModel().getSelectedItem();
 
             if (selectedCinema == null || selectedFilm == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -133,7 +132,12 @@ public class RepertuarController {
         view.bindDays(cinema.getDays());
         view.selectFirstDay();
         view.unbindTitle();
-        view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()));
+        if (cinema.nameProperty().get() != null) {
+            view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()));
+        } else {
+            view.bindTitle(cinema.cityProperty());
+        }
+
     }
 
     private class CinemasMouseHandler implements EventHandler<MouseEvent> {
@@ -160,7 +164,7 @@ public class RepertuarController {
         MenuItem visitWebsite = new MenuItem("Visit website");
         visitWebsite.setOnAction(event -> {
             try {
-                HeliosFilm film = (HeliosFilm) view.filmsListView().getSelectionModel().getSelectedItem();
+                Film film = (Film) view.filmsListView().getSelectionModel().getSelectedItem();
                 film.getWebsite().open();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -176,7 +180,11 @@ public class RepertuarController {
 
         view.bindHours(film.getHours());
         view.unbindTitle();
-        view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()).concat(" - ").concat(film.titleProperty()));
+        if (cinema.nameProperty().get() != null) {
+            view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()).concat(" - ").concat(film.titleProperty()));
+        } else {
+            view.bindTitle(cinema.cityProperty().concat(" - ").concat(film.titleProperty()));
+        }
     }
 
     private class FilmsMouseHandler implements EventHandler<MouseEvent> {
