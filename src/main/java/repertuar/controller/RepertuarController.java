@@ -115,6 +115,7 @@ public class RepertuarController {
                 protected Void call() throws Exception {
                     RepertuarController.this.view.getPrimaryStage().getScene().setCursor(Cursor.WAIT);
                     cinema.loadDays();
+                    Platform.runLater(() -> view.daysComboBox().getSelectionModel().select(0));
                     return null;
                 }
             };
@@ -228,6 +229,8 @@ public class RepertuarController {
             ComboBox<Pair<String, SimpleListProperty<Film>>> days = (ComboBox<Pair<String, SimpleListProperty<Film>>>) event.getSource();
             Cinema selectedCinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
 
+            //if (days.getSelectionModel().getSelectedItem() != null) return;
+
             if (days != null && selectedCinema != null) {
                 int day = days.getSelectionModel().getSelectedIndex();
                 String date = days.getSelectionModel().getSelectedItem().getKey();
@@ -277,6 +280,9 @@ public class RepertuarController {
                         protected Void call() throws Exception {
                             BorderPane pane = (BorderPane) view.getMainPane().getItems().get(0);
                             Platform.runLater(() -> {
+                                view.daysComboBox().getSelectionModel().clearSelection();
+                                view.daysComboBox().getItems().clear();
+
                                 pane.setCenter(null);
 
                                 ProgressIndicator progressIndicator = new ProgressIndicator();

@@ -1,32 +1,23 @@
 package repertuar.view;
 
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
 import repertuar.model.Chain;
-import repertuar.model.Website;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
+import repertuar.model.Website;
 
-import java.util.List;
-
-/**
- * Created by mateu on 22.09.2015.
- */
 public class RepertuarView {
 
     private final ComboBox<Chain> chains;
@@ -40,18 +31,18 @@ public class RepertuarView {
 
     public RepertuarView(Stage primaryStage) {
 
-        this.root = new BorderPane();
-        this.mainPane = new SplitPane();
         this.primaryStage = primaryStage;
-        this.chains = new ComboBox<>();
-        this.chains.setMaxWidth(Double.MAX_VALUE);
-        this.cinemas = new ListView();
-        this.films = new ListView();
-        this.hours = new ListView();
-        this.days = new ComboBox<>();
-        this.days.setMaxWidth(Double.MAX_VALUE);
+        root = new BorderPane();
+        mainPane = new SplitPane();
+        chains = new ComboBox<>();
+        chains.setMaxWidth(Double.MAX_VALUE);
+        cinemas = new ListView();
+        films = new ListView();
+        hours = new ListView();
+        days = new ComboBox<>();
+        days.setMaxWidth(Double.MAX_VALUE);
 
-        this.cinemas.setCellFactory(new Callback<ListView<Cinema>, ListCell<Cinema>>() {
+        cinemas.setCellFactory(new Callback<ListView<Cinema>, ListCell<Cinema>>() {
             @Override
             public ListCell<Cinema> call(ListView<Cinema> param) {
                 ListCell<Cinema> cell = new ListCell<Cinema>() {
@@ -75,7 +66,7 @@ public class RepertuarView {
             }
         });
 
-        this.films.setCellFactory(new Callback<ListView<Film>, ListCell<Film>>() {
+        films.setCellFactory(new Callback<ListView<Film>, ListCell<Film>>() {
             @Override
             public ListCell<Film> call(ListView<Film> param) {
                 ListCell<Film> cell = new ListCell<Film>() {
@@ -95,7 +86,7 @@ public class RepertuarView {
             }
         });
 
-        this.hours.setCellFactory(new Callback<ListView<Pair<SimpleStringProperty, Website>>, ListCell<Pair<SimpleStringProperty, Website>>>() {
+        hours.setCellFactory(new Callback<ListView<Pair<SimpleStringProperty, Website>>, ListCell<Pair<SimpleStringProperty, Website>>>() {
             @Override
             public ListCell<Pair<SimpleStringProperty, Website>> call(ListView<Pair<SimpleStringProperty, Website>> param) {
                 ListCell<Pair<SimpleStringProperty, Website>> cell = new ListCell<Pair<SimpleStringProperty, Website>>() {
@@ -115,7 +106,7 @@ public class RepertuarView {
             }
         });
 
-        this.days.setButtonCell(new ListCell<Pair<String, SimpleListProperty<Film>>>() {
+        days.setButtonCell(new ListCell<Pair<String, SimpleListProperty<Film>>>() {
             @Override
             protected void updateItem(Pair<String, SimpleListProperty<Film>> item, boolean b) {
                 super.updateItem(item, b);
@@ -132,7 +123,7 @@ public class RepertuarView {
             }
         });
 
-        this.days.setCellFactory(new Callback<ListView<Pair<String, SimpleListProperty<Film>>>, ListCell<Pair<String, SimpleListProperty<Film>>>>() {
+        days.setCellFactory(new Callback<ListView<Pair<String, SimpleListProperty<Film>>>, ListCell<Pair<String, SimpleListProperty<Film>>>>() {
             @Override
             public ListCell<Pair<String, SimpleListProperty<Film>>> call(ListView<Pair<String, SimpleListProperty<Film>>> param) {
                 ListCell<Pair<String, SimpleListProperty<Film>>> cell = new ListCell<Pair<String, SimpleListProperty<Film>>>() {
@@ -156,12 +147,12 @@ public class RepertuarView {
             }
         });
 
-        mainPane.getItems().add(new BorderPane(this.cinemas, this.chains, null, null, null));
-        mainPane.getItems().add(new BorderPane(this.films, this.days, null, null, null));
+        mainPane.getItems().add(new BorderPane(cinemas, chains, null, null, null));
+        mainPane.getItems().add(new BorderPane(films, days, null, null, null));
         mainPane.getItems().add(this.hours);
         mainPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
 
-        this.root.setCenter(mainPane);
+        root.setCenter(mainPane);
 
         Scene scene = new Scene(root, 1024, 768);
 

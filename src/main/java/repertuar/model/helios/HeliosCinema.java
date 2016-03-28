@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.util.Pair;
 import repertuar.model.Cinema;
+import repertuar.model.Film;
 import repertuar.model.Website;
 
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class HeliosCinema extends Cinema {
                     }
                 }
                 if (!hours.isEmpty())
-                    days.get(day).getValue().add(new HeliosFilm(title, url, hours));
+                    days.get(day).getValue().add(new Film(title, url, hours));
             }
         }
     }
