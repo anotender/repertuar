@@ -6,21 +6,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import repertuar.model.*;
-import repertuar.model.helios.HeliosCinema;
 import repertuar.view.RepertuarView;
-
-import java.io.File;
-import java.io.PrintWriter;
 
 public class RepertuarController {
 
@@ -40,63 +37,15 @@ public class RepertuarController {
         this.view.addFilmsContextMenu(filmsContextMenu());
         this.view.addHoursHandler(new HoursHandler());
         this.view.addDaysHandler(new DaysHandler());
-        this.view.addMenuBar(createMenuBar());
 
-    }
-
-    private MenuBar createMenuBar() {
-        MenuItem save = new MenuItem("Save");
-        save.setOnAction(event -> {
-            HeliosCinema selectedCinema = (HeliosCinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-            Film selectedFilm = (Film) view.filmsListView().getSelectionModel().getSelectedItem();
-
-            if (selectedCinema == null || selectedFilm == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Wybierz kino i film");
-                alert.showAndWait();
-
-                return;
-            }
-
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialFileName("repertuar");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt (*.txt)", "*.txt"));
-            File file = fileChooser.showSaveDialog(view.getPrimaryStage());
-
-            try {
-                PrintWriter out = new PrintWriter(file);
-                out.println(selectedCinema.cityProperty().get() + " - " + selectedCinema.nameProperty().get());
-                out.println(selectedFilm.titleProperty().get());
-
-//                for (Pair<SimpleStringProperty, SimpleListProperty<Pair<SimpleStringProperty, Website>>> day : selectedFilm.getHours()) {
-//                    out.println();
-//                    out.println(day.getKey().get());
-//
-//                    for (Pair<SimpleStringProperty, Website> hour : day.getValue()) {
-//                        out.println(hour.getKey().get());
-//                    }
-//                }
-
-                out.close();
-            } catch (Exception e) {
-                System.out.println("Exception");
-            }
-        });
-
-        Menu fileMenu = new Menu("File");
-        fileMenu.getItems().addAll(save);
-
-        return new MenuBar(fileMenu);
     }
 
     private ContextMenu cinemasContextMenu() {
         MenuItem visitWebsite = new MenuItem("Visit website");
         visitWebsite.setOnAction(event -> {
             try {
-                HeliosCinema cinema = (HeliosCinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-                new Website(cinema.urlProperty().get()).open();
+                Cinema cinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
+                new Website(cinema.getUrl()).open();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -106,39 +55,35 @@ public class RepertuarController {
     }
 
     private void cinemasAction() {
-//        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
-
-        Cinema cinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-        if (cinema.getDays().isEmpty()) {
+        Cinema cinema = view.getSelectedCinema();
+        if (cinema.getDays() != null && cinema.getDays().isEmpty()) {
             Task task = new Task() {
                 @Override
                 protected Void call() throws Exception {
-                    RepertuarController.this.view.getPrimaryStage().getScene().setCursor(Cursor.WAIT);
+                    Platform.runLater(() -> view.setWaitCursor());
                     cinema.loadDays();
-                    Platform.runLater(() -> view.daysComboBox().getSelectionModel().select(0));
+                    Platform.runLater(() -> {
+                        view.bindDays(cinema.getDays());
+                        view.selectFirstDay();
+                    });
                     return null;
                 }
             };
-            task.setOnCancelled(stateEvent -> view.getPrimaryStage().getScene().setCursor(Cursor.DEFAULT));
-            task.setOnSucceeded(stateEvent -> view.getPrimaryStage().getScene().setCursor(Cursor.DEFAULT));
-            task.setOnFailed(stateEvent -> view.getPrimaryStage().getScene().setCursor(Cursor.DEFAULT));
+            task.setOnCancelled(stateEvent -> view.setDefaultCursor());
+            task.setOnSucceeded(stateEvent -> view.setDefaultCursor());
+            task.setOnFailed(stateEvent -> view.setDefaultCursor());
             new Thread(task).start();
         }
-        view.filmsListView().itemsProperty().unbind();
-        view.filmsListView().setItems(null);
 
-        view.hoursListView().itemsProperty().unbind();
-        view.hoursListView().setItems(null);
+        view.clearFilmsListView();
+        view.clearHoursListView();
 
-        view.bindDays(cinema.getDays());
-        view.selectFirstDay();
         view.unbindTitle();
-        if (cinema.nameProperty().get() != null) {
+        if (cinema.getName() != null) {
             view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()));
         } else {
             view.bindTitle(cinema.cityProperty());
         }
-
     }
 
     private class CinemasMouseHandler implements EventHandler<MouseEvent> {
@@ -165,7 +110,7 @@ public class RepertuarController {
         MenuItem visitWebsite = new MenuItem("Visit website");
         visitWebsite.setOnAction(event -> {
             try {
-                Film film = (Film) view.filmsListView().getSelectionModel().getSelectedItem();
+                Film film = view.getSelectedFilm();
                 film.getWebsite().open();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -176,12 +121,12 @@ public class RepertuarController {
     }
 
     private void filmsAction() {
-        Cinema cinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
-        Film film = (Film) view.filmsListView().getSelectionModel().getSelectedItem();
+        Cinema cinema = view.getSelectedCinema();
+        Film film = view.getSelectedFilm();
 
         view.bindHours(film.getHours());
         view.unbindTitle();
-        if (cinema.nameProperty().get() != null) {
+        if (cinema.getName() != null) {
             view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()).concat(" - ").concat(film.titleProperty()));
         } else {
             view.bindTitle(cinema.cityProperty().concat(" - ").concat(film.titleProperty()));
@@ -227,11 +172,9 @@ public class RepertuarController {
         @Override
         public void handle(ActionEvent event) {
             ComboBox<Pair<String, SimpleListProperty<Film>>> days = (ComboBox<Pair<String, SimpleListProperty<Film>>>) event.getSource();
-            Cinema selectedCinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
+            Cinema selectedCinema = view.getSelectedCinema();
 
-            //if (days.getSelectionModel().getSelectedItem() != null) return;
-
-            if (days != null && selectedCinema != null) {
+            if (days != null && days.getSelectionModel().getSelectedItem() != null && selectedCinema != null) {
                 int day = days.getSelectionModel().getSelectedIndex();
                 String date = days.getSelectionModel().getSelectedItem().getKey();
                 SimpleListProperty<Film> films = days.getSelectionModel().getSelectedItem().getValue();
@@ -260,10 +203,8 @@ public class RepertuarController {
                     };
                     new Thread(task).start();
                 }
-                view.filmsListView().itemsProperty().bind(films);
-
-                view.hoursListView().itemsProperty().unbind();
-                view.hoursListView().setItems(null);
+                view.bindFilms(films);
+                view.clearHoursListView();
             }
         }
     }
@@ -272,7 +213,7 @@ public class RepertuarController {
 
         @Override
         public void handle(ActionEvent event) {
-            Chain chain = ((ComboBox<Chain>) event.getSource()).getSelectionModel().getSelectedItem();
+            Chain chain = view.getSelectedChain();
             if (chain != null) {
                 if (chain.getCinemas().isEmpty()) {
                     Task task = new Task() {
@@ -302,12 +243,9 @@ public class RepertuarController {
                     new Thread(task).start();
                 }
                 view.bindCinemas(chain.getCinemas());
-
-                view.hoursListView().itemsProperty().unbind();
-                view.hoursListView().setItems(null);
-
-                view.filmsListView().itemsProperty().unbind();
-                view.filmsListView().setItems(null);
+                view.clearHoursListView();
+                view.clearFilmsListView();
+                view.daysComboBox().getSelectionModel().clearSelection();
             }
         }
     }

@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
@@ -36,24 +37,24 @@ public class RepertuarView {
         mainPane = new SplitPane();
         chains = new ComboBox<>();
         chains.setMaxWidth(Double.MAX_VALUE);
-        cinemas = new ListView();
-        films = new ListView();
-        hours = new ListView();
+        cinemas = new ListView<>();
+        films = new ListView<>();
+        hours = new ListView<>();
         days = new ComboBox<>();
         days.setMaxWidth(Double.MAX_VALUE);
 
         cinemas.setCellFactory(new Callback<ListView<Cinema>, ListCell<Cinema>>() {
             @Override
             public ListCell<Cinema> call(ListView<Cinema> param) {
-                ListCell<Cinema> cell = new ListCell<Cinema>() {
+                return new ListCell<Cinema>() {
                     @Override
-                    protected void updateItem(Cinema item, boolean b) {
-                        super.updateItem(item, b);
-                        if (item != null) {
-                            if (item.nameProperty().get() != null) {
-                                textProperty().bind(item.cityProperty().concat(" - ").concat(item.nameProperty()));
+                    protected void updateItem(Cinema cinema, boolean b) {
+                        super.updateItem(cinema, b);
+                        if (cinema != null) {
+                            if (cinema.getName() != null) {
+                                textProperty().bind(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()));
                             } else {
-                                textProperty().bind(item.cityProperty());
+                                textProperty().bind(cinema.cityProperty());
                             }
                         } else {
                             textProperty().unbind();
@@ -61,15 +62,13 @@ public class RepertuarView {
                         }
                     }
                 };
-
-                return cell;
             }
         });
 
         films.setCellFactory(new Callback<ListView<Film>, ListCell<Film>>() {
             @Override
             public ListCell<Film> call(ListView<Film> param) {
-                ListCell<Film> cell = new ListCell<Film>() {
+                return new ListCell<Film>() {
                     @Override
                     protected void updateItem(Film item, boolean b) {
                         super.updateItem(item, b);
@@ -81,15 +80,13 @@ public class RepertuarView {
                         }
                     }
                 };
-
-                return cell;
             }
         });
 
         hours.setCellFactory(new Callback<ListView<Pair<SimpleStringProperty, Website>>, ListCell<Pair<SimpleStringProperty, Website>>>() {
             @Override
             public ListCell<Pair<SimpleStringProperty, Website>> call(ListView<Pair<SimpleStringProperty, Website>> param) {
-                ListCell<Pair<SimpleStringProperty, Website>> cell = new ListCell<Pair<SimpleStringProperty, Website>>() {
+                return new ListCell<Pair<SimpleStringProperty, Website>>() {
                     @Override
                     protected void updateItem(Pair<SimpleStringProperty, Website> item, boolean b) {
                         super.updateItem(item, b);
@@ -101,8 +98,6 @@ public class RepertuarView {
                         }
                     }
                 };
-
-                return cell;
             }
         });
 
@@ -126,7 +121,7 @@ public class RepertuarView {
         days.setCellFactory(new Callback<ListView<Pair<String, SimpleListProperty<Film>>>, ListCell<Pair<String, SimpleListProperty<Film>>>>() {
             @Override
             public ListCell<Pair<String, SimpleListProperty<Film>>> call(ListView<Pair<String, SimpleListProperty<Film>>> param) {
-                ListCell<Pair<String, SimpleListProperty<Film>>> cell = new ListCell<Pair<String, SimpleListProperty<Film>>>() {
+                return new ListCell<Pair<String, SimpleListProperty<Film>>>() {
                     @Override
                     protected void updateItem(Pair<String, SimpleListProperty<Film>> item, boolean b) {
                         super.updateItem(item, b);
@@ -142,8 +137,6 @@ public class RepertuarView {
                         }
                     }
                 };
-
-                return cell;
             }
         });
 
@@ -179,25 +172,13 @@ public class RepertuarView {
         cinemas.itemsProperty().bind(list);
     }
 
-//    public void unbindCinemas() {
-//        cinemas.itemsProperty().unbind();
-//    }
-
     public void bindFilms(SimpleListProperty<Film> list) {
         films.itemsProperty().bind(list);
     }
 
-//    public void unbindFilms() {
-//        films.itemsProperty().unbind();
-//    }
-
     public void bindHours(SimpleListProperty<Pair<SimpleStringProperty, Website>> list) {
         hours.itemsProperty().bind(list);
     }
-
-//    public void unbindHours() {
-//        hours.itemsProperty().unbind();
-//    }
 
     public void bindDays(SimpleListProperty list) {
         days.itemsProperty().bind(list);
@@ -205,10 +186,6 @@ public class RepertuarView {
 
     public void selectFirstDay() {
         days.getSelectionModel().selectFirst();
-    }
-
-    public void addMenuBar(MenuBar menuBar) {
-        root.setTop(menuBar);
     }
 
     public void addChainsHandler(EventHandler<ActionEvent> handler) {
@@ -261,7 +238,33 @@ public class RepertuarView {
         return mainPane;
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
+    public void clearFilmsListView() {
+        films.itemsProperty().unbind();
+        films.setItems(null);
+    }
+
+    public void clearHoursListView() {
+        hours.itemsProperty().unbind();
+        hours.setItems(null);
+    }
+
+    public Chain getSelectedChain() {
+        return chains.getSelectionModel().getSelectedItem();
+    }
+
+    public Cinema getSelectedCinema() {
+        return cinemas.getSelectionModel().getSelectedItem();
+    }
+
+    public Film getSelectedFilm() {
+        return films.getSelectionModel().getSelectedItem();
+    }
+
+    public void setDefaultCursor() {
+        primaryStage.getScene().setCursor(Cursor.DEFAULT);
+    }
+
+    public void setWaitCursor() {
+        primaryStage.getScene().setCursor(Cursor.WAIT);
     }
 }
