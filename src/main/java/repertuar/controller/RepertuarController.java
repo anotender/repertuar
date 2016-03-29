@@ -3,6 +3,9 @@ package repertuar.controller;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,7 +28,6 @@ public class RepertuarController {
     private final RepertuarModel model;
 
     public RepertuarController(RepertuarView view, RepertuarModel model) {
-
         this.view = view;
         this.model = model;
 
@@ -37,7 +39,8 @@ public class RepertuarController {
         this.view.addFilmsContextMenu(filmsContextMenu());
         this.view.addHoursHandler(new HoursHandler());
         this.view.addDaysHandler(new DaysHandler());
-
+        this.view.addCinemasFilterTextFieldHandler(new CinemasFilterTextFieldHandler());
+        this.view.addFilmsFilterTextFieldHandler(new FilmsFilterTextFieldHandler());
     }
 
     private ContextMenu cinemasContextMenu() {
@@ -76,6 +79,7 @@ public class RepertuarController {
         }
 
         view.clearFilmsListView();
+        view.clearFilmsFilterTextField();
         view.clearHoursListView();
 
         view.unbindTitle();
@@ -87,7 +91,6 @@ public class RepertuarController {
     }
 
     private class CinemasMouseHandler implements EventHandler<MouseEvent> {
-
         @Override
         public void handle(MouseEvent event) {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
@@ -97,7 +100,6 @@ public class RepertuarController {
     }
 
     private class CinemasKeyHandler implements EventHandler<KeyEvent> {
-
         @Override
         public void handle(KeyEvent event) {
             if (event.getCode().equals(KeyCode.ENTER)) {
@@ -134,7 +136,6 @@ public class RepertuarController {
     }
 
     private class FilmsMouseHandler implements EventHandler<MouseEvent> {
-
         @Override
         public void handle(MouseEvent event) {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
@@ -144,7 +145,6 @@ public class RepertuarController {
     }
 
     private class FilmsKeyHandler implements EventHandler<KeyEvent> {
-
         @Override
         public void handle(KeyEvent event) {
             if (event.getCode().equals(KeyCode.ENTER)) {
@@ -154,7 +154,6 @@ public class RepertuarController {
     }
 
     private class HoursHandler implements EventHandler<MouseEvent> {
-
         @Override
         public void handle(MouseEvent event) {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
@@ -168,7 +167,6 @@ public class RepertuarController {
     }
 
     private class DaysHandler implements EventHandler<ActionEvent> {
-
         @Override
         public void handle(ActionEvent event) {
             ComboBox<Pair<String, SimpleListProperty<Film>>> days = (ComboBox<Pair<String, SimpleListProperty<Film>>>) event.getSource();
@@ -205,12 +203,12 @@ public class RepertuarController {
                 }
                 view.bindFilms(films);
                 view.clearHoursListView();
+                view.clearFilmsFilterTextField();
             }
         }
     }
 
     private class ChainsHandler implements EventHandler<ActionEvent> {
-
         @Override
         public void handle(ActionEvent event) {
             Chain chain = view.getSelectedChain();
@@ -242,6 +240,8 @@ public class RepertuarController {
                     };
                     new Thread(task).start();
                 }
+                view.clearCinemasFilterTextField();
+                view.clearFilmsFilterTextField();
                 view.bindCinemas(chain.getCinemas());
                 view.clearHoursListView();
                 view.clearFilmsListView();
@@ -250,4 +250,44 @@ public class RepertuarController {
         }
     }
 
+    private class CinemasFilterTextFieldHandler implements ChangeListener<String> {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            FilteredList<Cinema> filteredData = new FilteredList<>(view.getSelectedChain().getCinemas(), p -> true);
+            filteredData.setPredicate(cinema -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                if (cinema.getName() != null && cinema.getName().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else if (cinema.getCity().toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                }
+                return false;
+            });
+            view.unbindCinemas();
+            view.cinemasListView().setItems(filteredData);
+        }
+    }
+
+    private class FilmsFilterTextFieldHandler implements ChangeListener<String> {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            FilteredList<Film> filteredData = new FilteredList<>(view.getSelectedDay().getValue(), p -> true);
+            filteredData.setPredicate(film -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                return film.getTitle().toLowerCase().contains(lowerCaseFilter);
+            });
+            view.unbindFilms();
+            view.filmsListView().setItems(filteredData);
+        }
+    }
 }

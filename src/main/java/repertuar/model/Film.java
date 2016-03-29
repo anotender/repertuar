@@ -23,6 +23,14 @@ public class Film {
         return title;
     }
 
+    public String getTitle() {
+        return title.get();
+    }
+
+    public void setTitle(String title) {
+        this.title.set(title);
+    }
+
     public SimpleListProperty<Pair<SimpleStringProperty, Website>> getHours() {
         return hours;
     }

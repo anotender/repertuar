@@ -1,8 +1,11 @@
 package repertuar.view;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -23,7 +26,9 @@ public class RepertuarView {
 
     private final ComboBox<Chain> chains;
     private final ListView<Cinema> cinemas;
+    private final TextField cinemasFilterTextField;
     private final ListView<Film> films;
+    private final TextField filmsFilterTextField;
     private final ListView<Pair<SimpleStringProperty, Website>> hours;
     private final ComboBox<Pair<String, SimpleListProperty<Film>>> days;
     private final BorderPane root;
@@ -38,7 +43,11 @@ public class RepertuarView {
         chains = new ComboBox<>();
         chains.setMaxWidth(Double.MAX_VALUE);
         cinemas = new ListView<>();
+        cinemasFilterTextField = new TextField();
+        cinemasFilterTextField.setPromptText("Search for cinema");
         films = new ListView<>();
+        filmsFilterTextField = new TextField();
+        filmsFilterTextField.setPromptText("Search for film");
         hours = new ListView<>();
         days = new ComboBox<>();
         days.setMaxWidth(Double.MAX_VALUE);
@@ -140,8 +149,8 @@ public class RepertuarView {
             }
         });
 
-        mainPane.getItems().add(new BorderPane(cinemas, chains, null, null, null));
-        mainPane.getItems().add(new BorderPane(films, days, null, null, null));
+        mainPane.getItems().add(new BorderPane(cinemas, chains, null, cinemasFilterTextField, null));
+        mainPane.getItems().add(new BorderPane(films, days, null, filmsFilterTextField, null));
         mainPane.getItems().add(this.hours);
         mainPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
 
@@ -168,12 +177,20 @@ public class RepertuarView {
         chains.itemsProperty().bind(list);
     }
 
-    public void bindCinemas(SimpleListProperty<Cinema> list) {
+    public void bindCinemas(ObservableValue<? extends ObservableList<Cinema>> list) {
         cinemas.itemsProperty().bind(list);
+    }
+
+    public void unbindCinemas() {
+        cinemas.itemsProperty().unbind();
     }
 
     public void bindFilms(SimpleListProperty<Film> list) {
         films.itemsProperty().bind(list);
+    }
+
+    public void unbindFilms() {
+        films.itemsProperty().unbind();
     }
 
     public void bindHours(SimpleListProperty<Pair<SimpleStringProperty, Website>> list) {
@@ -218,6 +235,14 @@ public class RepertuarView {
         days.setOnAction(handler);
     }
 
+    public void addCinemasFilterTextFieldHandler(ChangeListener<String> changeListener) {
+        cinemasFilterTextField.textProperty().addListener(changeListener);
+    }
+
+    public void addFilmsFilterTextFieldHandler(ChangeListener<String> changeListener) {
+        filmsFilterTextField.textProperty().addListener(changeListener);
+    }
+
     public ListView cinemasListView() {
         return cinemas;
     }
@@ -248,12 +273,24 @@ public class RepertuarView {
         hours.setItems(null);
     }
 
+    public void clearCinemasFilterTextField() {
+        cinemasFilterTextField.clear();
+    }
+
+    public void clearFilmsFilterTextField() {
+        filmsFilterTextField.clear();
+    }
+
     public Chain getSelectedChain() {
         return chains.getSelectionModel().getSelectedItem();
     }
 
     public Cinema getSelectedCinema() {
         return cinemas.getSelectionModel().getSelectedItem();
+    }
+
+    public Pair<String, SimpleListProperty<Film>> getSelectedDay() {
+        return days.getSelectionModel().getSelectedItem();
     }
 
     public Film getSelectedFilm() {
