@@ -1,6 +1,5 @@
 package repertuar.view;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -16,11 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.util.Pair;
-import repertuar.model.Chain;
-import repertuar.model.Cinema;
-import repertuar.model.Film;
-import repertuar.model.Website;
+import repertuar.model.*;
 
 public class RepertuarView {
 
@@ -29,8 +24,8 @@ public class RepertuarView {
     private final TextField cinemasFilterTextField;
     private final ListView<Film> films;
     private final TextField filmsFilterTextField;
-    private final ListView<Pair<SimpleStringProperty, Website>> hours;
-    private final ComboBox<Pair<String, SimpleListProperty<Film>>> days;
+    private final ListView<Seance> seances;
+    private final ComboBox<SeanceDay> seanceDays;
     private final BorderPane root;
     private final SplitPane mainPane;
     private final Stage primaryStage;
@@ -48,9 +43,9 @@ public class RepertuarView {
         films = new ListView<>();
         filmsFilterTextField = new TextField();
         filmsFilterTextField.setPromptText("Search for film");
-        hours = new ListView<>();
-        days = new ComboBox<>();
-        days.setMaxWidth(Double.MAX_VALUE);
+        seances = new ListView<>();
+        seanceDays = new ComboBox<>();
+        seanceDays.setMaxWidth(Double.MAX_VALUE);
 
         cinemas.setCellFactory(new Callback<ListView<Cinema>, ListCell<Cinema>>() {
             @Override
@@ -92,15 +87,15 @@ public class RepertuarView {
             }
         });
 
-        hours.setCellFactory(new Callback<ListView<Pair<SimpleStringProperty, Website>>, ListCell<Pair<SimpleStringProperty, Website>>>() {
+        seances.setCellFactory(new Callback<ListView<Seance>, ListCell<Seance>>() {
             @Override
-            public ListCell<Pair<SimpleStringProperty, Website>> call(ListView<Pair<SimpleStringProperty, Website>> param) {
-                return new ListCell<Pair<SimpleStringProperty, Website>>() {
+            public ListCell<Seance> call(ListView<Seance> param) {
+                return new ListCell<Seance>() {
                     @Override
-                    protected void updateItem(Pair<SimpleStringProperty, Website> item, boolean b) {
+                    protected void updateItem(Seance item, boolean b) {
                         super.updateItem(item, b);
                         if (item != null) {
-                            textProperty().bind(item.getKey());
+                            textProperty().bind(item.stringToShowProperty());
                         } else {
                             textProperty().unbind();
                             textProperty().set("");
@@ -110,15 +105,16 @@ public class RepertuarView {
             }
         });
 
-        days.setButtonCell(new ListCell<Pair<String, SimpleListProperty<Film>>>() {
+        seanceDays.setButtonCell(new ListCell<SeanceDay>() {
             @Override
-            protected void updateItem(Pair<String, SimpleListProperty<Film>> item, boolean b) {
+            protected void updateItem(SeanceDay item, boolean b) {
                 super.updateItem(item, b);
                 if (item != null) {
-                    if (item.getKey().contains(":")) {
-                        textProperty().bind(new SimpleStringProperty(item.getKey().substring(0, item.getKey().indexOf(":"))));
+                    String stringToShow = item.getStringToShow();
+                    if (stringToShow.contains(":")) {
+                        textProperty().bind(new SimpleStringProperty(stringToShow.substring(0, stringToShow.indexOf(":"))));
                     } else {
-                        textProperty().bind(new SimpleStringProperty(item.getKey()));
+                        textProperty().bind(new SimpleStringProperty(stringToShow));
                     }
                 } else {
                     textProperty().unbind();
@@ -127,18 +123,19 @@ public class RepertuarView {
             }
         });
 
-        days.setCellFactory(new Callback<ListView<Pair<String, SimpleListProperty<Film>>>, ListCell<Pair<String, SimpleListProperty<Film>>>>() {
+        seanceDays.setCellFactory(new Callback<ListView<SeanceDay>, ListCell<SeanceDay>>() {
             @Override
-            public ListCell<Pair<String, SimpleListProperty<Film>>> call(ListView<Pair<String, SimpleListProperty<Film>>> param) {
-                return new ListCell<Pair<String, SimpleListProperty<Film>>>() {
+            public ListCell<SeanceDay> call(ListView<SeanceDay> param) {
+                return new ListCell<SeanceDay>() {
                     @Override
-                    protected void updateItem(Pair<String, SimpleListProperty<Film>> item, boolean b) {
+                    protected void updateItem(SeanceDay item, boolean b) {
                         super.updateItem(item, b);
                         if (item != null) {
-                            if (item.getKey().contains(":")) {
-                                textProperty().bind(new SimpleStringProperty(item.getKey().substring(0, item.getKey().indexOf(":"))));
+                            String stringToShow = item.getStringToShow();
+                            if (stringToShow.contains(":")) {
+                                textProperty().bind(new SimpleStringProperty(stringToShow.substring(0, stringToShow.indexOf(":"))));
                             } else {
-                                textProperty().bind(new SimpleStringProperty(item.getKey()));
+                                textProperty().bind(new SimpleStringProperty(stringToShow));
                             }
                         } else {
                             textProperty().unbind();
@@ -150,8 +147,8 @@ public class RepertuarView {
         });
 
         mainPane.getItems().add(new BorderPane(cinemas, chains, null, cinemasFilterTextField, null));
-        mainPane.getItems().add(new BorderPane(films, days, null, filmsFilterTextField, null));
-        mainPane.getItems().add(this.hours);
+        mainPane.getItems().add(new BorderPane(films, seanceDays, null, filmsFilterTextField, null));
+        mainPane.getItems().add(seances);
         mainPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
 
         root.setCenter(mainPane);
@@ -193,16 +190,16 @@ public class RepertuarView {
         films.itemsProperty().unbind();
     }
 
-    public void bindHours(SimpleListProperty<Pair<SimpleStringProperty, Website>> list) {
-        hours.itemsProperty().bind(list);
+    public void bindHours(SimpleListProperty<Seance> list) {
+        seances.itemsProperty().bind(list);
     }
 
-    public void bindDays(SimpleListProperty list) {
-        days.itemsProperty().bind(list);
+    public void bindDays(SimpleListProperty<SeanceDay> list) {
+        seanceDays.itemsProperty().bind(list);
     }
 
     public void selectFirstDay() {
-        days.getSelectionModel().selectFirst();
+        seanceDays.getSelectionModel().selectFirst();
     }
 
     public void addChainsHandler(EventHandler<ActionEvent> handler) {
@@ -228,11 +225,11 @@ public class RepertuarView {
     }
 
     public void addHoursHandler(EventHandler<MouseEvent> handler) {
-        hours.setOnMouseClicked(handler);
+        seances.setOnMouseClicked(handler);
     }
 
     public void addDaysHandler(EventHandler<ActionEvent> handler) {
-        days.setOnAction(handler);
+        seanceDays.setOnAction(handler);
     }
 
     public void addCinemasFilterTextFieldHandler(ChangeListener<String> changeListener) {
@@ -252,11 +249,11 @@ public class RepertuarView {
     }
 
     public ComboBox daysComboBox() {
-        return days;
+        return seanceDays;
     }
 
     public ListView hoursListView() {
-        return hours;
+        return seances;
     }
 
     public SplitPane getMainPane() {
@@ -269,8 +266,8 @@ public class RepertuarView {
     }
 
     public void clearHoursListView() {
-        hours.itemsProperty().unbind();
-        hours.setItems(null);
+        seances.itemsProperty().unbind();
+        seances.setItems(null);
     }
 
     public void clearCinemasFilterTextField() {
@@ -289,8 +286,8 @@ public class RepertuarView {
         return cinemas.getSelectionModel().getSelectedItem();
     }
 
-    public Pair<String, SimpleListProperty<Film>> getSelectedDay() {
-        return days.getSelectionModel().getSelectedItem();
+    public SeanceDay getSelectedDay() {
+        return seanceDays.getSelectionModel().getSelectedItem();
     }
 
     public Film getSelectedFilm() {

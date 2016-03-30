@@ -3,7 +3,6 @@ package repertuar.model;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.util.Pair;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -13,7 +12,7 @@ public abstract class Cinema {
     protected final SimpleStringProperty name;
     protected final SimpleStringProperty city;
     protected final SimpleStringProperty url;
-    protected final SimpleListProperty<Pair<String, SimpleListProperty<Film>>> days = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
+    protected final SimpleListProperty<SeanceDay> days = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
 
     public Cinema(String name, String city, String url) {
         this.name = new SimpleStringProperty(name);

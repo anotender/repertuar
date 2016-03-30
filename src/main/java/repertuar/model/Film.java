@@ -3,20 +3,18 @@ package repertuar.model;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.util.Pair;
 
 import java.util.LinkedList;
 
 public class Film {
-
     private final SimpleStringProperty title;
     private final Website website;
-    private final SimpleListProperty<Pair<SimpleStringProperty, Website>> hours = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
+    private final SimpleListProperty<Seance> seances;
 
-    public Film(String title, String url, LinkedList<Pair<SimpleStringProperty, Website>> hours) {
+    public Film(String title, String url, LinkedList<Seance> hours) {
         this.title = new SimpleStringProperty(title);
         this.website = new Website(url);
-        this.hours.addAll(hours);
+        this.seances = new SimpleListProperty<>(FXCollections.observableList(hours));
     }
 
     public SimpleStringProperty titleProperty() {
@@ -31,8 +29,8 @@ public class Film {
         this.title.set(title);
     }
 
-    public SimpleListProperty<Pair<SimpleStringProperty, Website>> getHours() {
-        return hours;
+    public SimpleListProperty<Seance> getHours() {
+        return seances;
     }
 
     public Website getWebsite() {

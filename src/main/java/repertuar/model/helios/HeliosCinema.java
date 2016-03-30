@@ -4,12 +4,8 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.util.Pair;
-import repertuar.model.Cinema;
-import repertuar.model.Film;
-import repertuar.model.Website;
+import repertuar.model.*;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -34,8 +30,11 @@ public class HeliosCinema extends Cinema {
                 String dayOfMonth = liElement.getElementsByTagName("strong").get(0).getTextContent();
                 String month = liElement.getElementsByTagName("em").get(0).getTextContent();
 
-                days.add(new Pair<>(dayOfWeek + " " + dayOfMonth + " " + month,
-                        new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>())))
+                days.add(
+                        new SeanceDay(
+                                dayOfWeek + " " + dayOfMonth + " " + month,
+                                new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
+                        )
                 );
             }
         }
@@ -51,7 +50,7 @@ public class HeliosCinema extends Cinema {
         for (DomElement liElement : liElements) {
             if (liElement.hasAttribute("class") && liElement.getAttribute("class").equals("seance")) {
                 List<HtmlElement> aElements = liElement.getElementsByTagName("a");
-                LinkedList<Pair<SimpleStringProperty, Website>> hours = new LinkedList<>();
+                LinkedList<Seance> hours = new LinkedList<>();
                 String url = null, title = null;
                 for (HtmlElement aElement : aElements) {
                     if (aElement.hasAttribute("class") && aElement.getAttribute("class").equals("movie-link")) {
@@ -61,14 +60,11 @@ public class HeliosCinema extends Cinema {
                         String hour = aElement.getTextContent();
                         String hourUrl = "http://helios.pl" + aElement.getAttribute("href");
 
-                        hours.add(new Pair<>(
-                                new SimpleStringProperty(hour),
-                                new Website(hourUrl)
-                        ));
+                        hours.add(new Seance(hour, hourUrl));
                     }
                 }
                 if (!hours.isEmpty())
-                    days.get(day).getValue().add(new Film(title, url, hours));
+                    days.get(day).getFilms().add(new Film(title, url, hours));
             }
         }
     }

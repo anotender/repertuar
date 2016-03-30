@@ -3,12 +3,8 @@ package repertuar.model.multikino;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.util.Pair;
-import repertuar.model.Cinema;
-import repertuar.model.Film;
-import repertuar.model.Website;
+import repertuar.model.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -43,7 +39,7 @@ public class MultikinoCinema extends Cinema {
             if (divElement.hasAttribute("class") && divElement.getAttribute("class").equals("day-item")) {
                 String dateString = divElement.getTextContent().replaceAll("\n", "").trim().replaceAll("\\s+", " ");
                 days.add(
-                        new Pair<>(
+                        new SeanceDay(
                                 dateString + ":" + divElement.getAttribute("data-date"),
                                 new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
                         )
@@ -64,7 +60,7 @@ public class MultikinoCinema extends Cinema {
 
         for (DomElement liElement : liElements) {
             if (liElement.hasAttribute("class") && liElement.getAttribute("class").contains("genre-7")) {
-                LinkedList<Pair<SimpleStringProperty, Website>> hours = new LinkedList<>();
+                LinkedList<Seance> hours = new LinkedList<>();
 
                 liElement.getElementsByTagName("a").forEach(htmlElement -> {
                     if (htmlElement.getAttribute("class").equals("showing-popup-trigger active")) {
@@ -79,15 +75,15 @@ public class MultikinoCinema extends Cinema {
                         seanceUrl += "/wybierz-miejsce";
 
                         hours.add(
-                                new Pair<>(
-                                        new SimpleStringProperty(htmlElement.getTextContent().trim()),
-                                        new Website(seanceUrl)
+                                new Seance(
+                                        htmlElement.getTextContent().trim(),
+                                        seanceUrl
                                 )
                         );
                     } else if (htmlElement.getAttribute("class").equals("title")) {
                         String title = htmlElement.getTextContent().trim();
                         String url = htmlElement.getAttribute("href");
-                        days.get(day).getValue().add(new Film(title, url, hours));
+                        days.get(day).getFilms().add(new Film(title, url, hours));
                     }
                 });
             }

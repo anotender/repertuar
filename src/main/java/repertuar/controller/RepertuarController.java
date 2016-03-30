@@ -2,7 +2,6 @@ package repertuar.controller;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
@@ -18,7 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.util.Pair;
 import repertuar.model.*;
 import repertuar.view.RepertuarView;
 
@@ -84,7 +82,11 @@ public class RepertuarController {
 
         view.unbindTitle();
         if (cinema.getName() != null) {
-            view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()));
+            view.bindTitle(
+                    cinema.cityProperty().
+                            concat(" - ").
+                            concat(cinema.nameProperty())
+            );
         } else {
             view.bindTitle(cinema.cityProperty());
         }
@@ -129,9 +131,19 @@ public class RepertuarController {
         view.bindHours(film.getHours());
         view.unbindTitle();
         if (cinema.getName() != null) {
-            view.bindTitle(cinema.cityProperty().concat(" - ").concat(cinema.nameProperty()).concat(" - ").concat(film.titleProperty()));
+            view.bindTitle(
+                    cinema.cityProperty().
+                            concat(" - ").
+                            concat(cinema.nameProperty()).
+                            concat(" - ").
+                            concat(film.titleProperty())
+            );
         } else {
-            view.bindTitle(cinema.cityProperty().concat(" - ").concat(film.titleProperty()));
+            view.bindTitle(
+                    cinema.cityProperty().
+                            concat(" - ").
+                            concat(film.titleProperty())
+            );
         }
     }
 
@@ -158,7 +170,8 @@ public class RepertuarController {
         public void handle(MouseEvent event) {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 try {
-                    ((Pair<SimpleStringProperty, Website>) view.hoursListView().getSelectionModel().getSelectedItem()).getValue().open();
+                    Seance seance = (Seance) view.hoursListView().getSelectionModel().getSelectedItem();
+                    seance.getWebsite().open();
                 } catch (Exception e) {
                     handle(event);
                 }
@@ -169,13 +182,13 @@ public class RepertuarController {
     private class DaysHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
-            ComboBox<Pair<String, SimpleListProperty<Film>>> days = (ComboBox<Pair<String, SimpleListProperty<Film>>>) event.getSource();
+            ComboBox<SeanceDay> days = (ComboBox<SeanceDay>) event.getSource();
             Cinema selectedCinema = view.getSelectedCinema();
 
             if (days != null && days.getSelectionModel().getSelectedItem() != null && selectedCinema != null) {
                 int day = days.getSelectionModel().getSelectedIndex();
-                String date = days.getSelectionModel().getSelectedItem().getKey();
-                SimpleListProperty<Film> films = days.getSelectionModel().getSelectedItem().getValue();
+                String date = days.getSelectionModel().getSelectedItem().getStringToShow();
+                SimpleListProperty<Film> films = days.getSelectionModel().getSelectedItem().filmsProperty();
 
                 if (films.isEmpty()) {
                     Task task = new Task() {
@@ -276,7 +289,7 @@ public class RepertuarController {
     private class FilmsFilterTextFieldHandler implements ChangeListener<String> {
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            FilteredList<Film> filteredData = new FilteredList<>(view.getSelectedDay().getValue(), p -> true);
+            FilteredList<Film> filteredData = new FilteredList<>(view.getSelectedDay().getFilms(), p -> true);
             filteredData.setPredicate(film -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;

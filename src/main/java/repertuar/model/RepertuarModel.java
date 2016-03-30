@@ -13,18 +13,13 @@ public class RepertuarModel {
     private final SimpleListProperty<Chain> chains;
 
     public RepertuarModel() {
-        LinkedList tmp = new LinkedList();
-        tmp.add(new Helios("Helios", new Website("http://helios.pl")));
-        tmp.add(new Multikino("Multikino", new Website("http://multikino.pl")));
-        tmp.add(new CinemaCity("Cinema-City", new Website("http://www.cinema-city.pl/")));
-
-        this.chains = new SimpleListProperty<>(FXCollections.observableList(tmp));
-
+        chains = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
+        chains.add(new Helios("Helios", new Website("http://helios.pl")));
+        chains.add(new Multikino("Multikino", new Website("http://multikino.pl")));
+        chains.add(new CinemaCity("Cinema-City", new Website("http://www.cinema-city.pl/")));
     }
 
     public SimpleListProperty<Chain> getChains() {
         return chains;
     }
-
-
 }
