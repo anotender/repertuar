@@ -294,6 +294,10 @@ public class RepertuarView {
         return films.getSelectionModel().getSelectedItem();
     }
 
+    public Seance getSelectedSeance() {
+        return seances.getSelectionModel().getSelectedItem();
+    }
+
     public void setDefaultCursor() {
         primaryStage.getScene().setCursor(Cursor.DEFAULT);
     }

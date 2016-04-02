@@ -45,7 +45,7 @@ public class RepertuarController {
         MenuItem visitWebsite = new MenuItem("Visit website");
         visitWebsite.setOnAction(event -> {
             try {
-                Cinema cinema = (Cinema) view.cinemasListView().getSelectionModel().getSelectedItem();
+                Cinema cinema = view.getSelectedCinema();
                 new Website(cinema.getUrl()).open();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -170,7 +170,7 @@ public class RepertuarController {
         public void handle(MouseEvent event) {
             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 try {
-                    Seance seance = (Seance) view.hoursListView().getSelectionModel().getSelectedItem();
+                    Seance seance = view.getSelectedSeance();
                     seance.getWebsite().open();
                 } catch (Exception e) {
                     handle(event);
@@ -195,15 +195,7 @@ public class RepertuarController {
                         @Override
                         protected Void call() throws Exception {
                             BorderPane pane = (BorderPane) view.getMainPane().getItems().get(1);
-                            Platform.runLater(() -> {
-                                pane.setCenter(null);
-
-                                ProgressIndicator progressIndicator = new ProgressIndicator();
-                                progressIndicator.setMaxWidth(100);
-                                progressIndicator.setMaxHeight(100);
-
-                                pane.setCenter(progressIndicator);
-                            });
+                            Platform.runLater(() -> setProgressIndicator(pane));
                             selectedCinema.loadFilms(day, date);
                             Platform.runLater(() -> {
                                 pane.setCenter(null);
@@ -235,13 +227,7 @@ public class RepertuarController {
                                 view.daysComboBox().getSelectionModel().clearSelection();
                                 view.daysComboBox().getItems().clear();
 
-                                pane.setCenter(null);
-
-                                ProgressIndicator progressIndicator = new ProgressIndicator();
-                                progressIndicator.setMaxWidth(100);
-                                progressIndicator.setMaxHeight(100);
-
-                                pane.setCenter(progressIndicator);
+                                setProgressIndicator(pane);
                             });
                             chain.loadCinemas();
                             Platform.runLater(() -> {
@@ -302,5 +288,15 @@ public class RepertuarController {
             view.unbindFilms();
             view.filmsListView().setItems(filteredData);
         }
+    }
+
+    private void setProgressIndicator(BorderPane pane) {
+        pane.setCenter(null);
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        progressIndicator.setMaxWidth(100);
+        progressIndicator.setMaxHeight(100);
+
+        pane.setCenter(progressIndicator);
     }
 }
