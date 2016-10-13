@@ -1,12 +1,11 @@
 package repertuar.model.multikino;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import repertuar.model.Chain;
+import repertuar.model.Cinema;
 import repertuar.model.Website;
 
 import java.io.IOException;
-import java.util.List;
 
 public class Multikino extends Chain {
 
@@ -16,19 +15,19 @@ public class Multikino extends Chain {
 
     @Override
     public void loadCinemas() throws IOException {
-        Website website = new Website("https://multikino.pl/pl/nasze-kina");
+        new Website("https://multikino.pl/pl/nasze-kina")
+                .loadPageWithJavaScriptDisabled()
+                .getElementsByTagName("a")
+                .stream()
+                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").equals("title"))
+                .map(this::extractCinema)
+                .forEach(cinemas::add);
+    }
 
-        HtmlPage page = website.loadPageWithJavaScriptDisabled();
-
-        List<DomElement> elements = page.getElementsByTagName("a");
-
-        for (DomElement e : elements) {
-            if (e.hasAttribute("class") && e.getAttribute("class").equals("title")) {
-                String url = "https://multikino.pl" + e.getAttribute("href");
-                String city = e.getTextContent();
-                int cinemaNumber = Integer.parseInt(e.getAttribute("rel"));
-                cinemas.add(new MultikinoCinema(null, city, url, cinemaNumber));
-            }
-        }
+    private Cinema extractCinema(DomElement e) {
+        String url = "https://multikino.pl" + e.getAttribute("href");
+        String city = e.getTextContent();
+        int cinemaNumber = Integer.parseInt(e.getAttribute("rel"));
+        return new MultikinoCinema(null, city, url, cinemaNumber);
     }
 }

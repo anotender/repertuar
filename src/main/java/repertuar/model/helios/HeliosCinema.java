@@ -2,7 +2,6 @@ package repertuar.model.helios;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import repertuar.model.*;
@@ -19,53 +18,50 @@ public class HeliosCinema extends Cinema {
 
     @Override
     public void loadDays() throws IOException {
-        Website website = new Website(url.get().replace("StronaGlowna/", "Repertuar/index/dzien/"));
-        HtmlPage page = website.loadPageWithJavaScriptDisabled();
-
-        List<DomElement> liElements = page.getElementsByTagName("li");
-
-        for (DomElement liElement : liElements) {
-            if (liElement.hasAttribute("class") && liElement.getAttribute("class").contains("day")) {
-                String dayOfWeek = liElement.getElementsByTagName("abbr").get(0).getTextContent();
-                String dayOfMonth = liElement.getElementsByTagName("strong").get(0).getTextContent();
-                String month = liElement.getElementsByTagName("em").get(0).getTextContent();
-
-                days.add(
-                        new SeanceDay(
-                                dayOfWeek + " " + dayOfMonth + " " + month,
-                                new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
-                        )
-                );
-            }
-        }
+        new Website(url.get().replace("StronaGlowna/", "Repertuar/index/dzien/"))
+                .loadPageWithJavaScriptDisabled()
+                .getElementsByTagName("li")
+                .stream()
+                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").contains("day"))
+                .map(this::extractSeanceDayFromDomElement)
+                .forEach(days::add);
     }
 
     @Override
     public void loadFilms(int day, String date) throws IOException {
-        Website website = new Website(url.get().replace("StronaGlowna/", "Repertuar/index/dzien/" + day));
-        HtmlPage page = website.loadPageWithJavaScriptDisabled();
+        new Website(url.get().replace("StronaGlowna/", "Repertuar/index/dzien/" + day))
+                .loadPageWithJavaScriptDisabled()
+                .getElementsByTagName("li")
+                .stream()
+                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").equals("seance"))
+                .forEach(e -> {
+                    List<HtmlElement> aElements = e.getElementsByTagName("a");
+                    LinkedList<Seance> hours = new LinkedList<>();
+                    String url = null, title = null;
+                    for (HtmlElement aElement : aElements) {
+                        if (aElement.hasAttribute("class") && aElement.getAttribute("class").equals("movie-link")) {
+                            url = "http://helios.pl" + aElement.getAttribute("href");
+                            title = aElement.getTextContent().trim();
+                        } else if (aElement.hasAttribute("class") && aElement.getAttribute("class").equals("hour-link fancybox-reservation")) {
+                            String hour = aElement.getTextContent();
+                            String hourUrl = "http://helios.pl" + aElement.getAttribute("href");
 
-        List<DomElement> liElements = page.getElementsByTagName("li");
-
-        for (DomElement liElement : liElements) {
-            if (liElement.hasAttribute("class") && liElement.getAttribute("class").equals("seance")) {
-                List<HtmlElement> aElements = liElement.getElementsByTagName("a");
-                LinkedList<Seance> hours = new LinkedList<>();
-                String url = null, title = null;
-                for (HtmlElement aElement : aElements) {
-                    if (aElement.hasAttribute("class") && aElement.getAttribute("class").equals("movie-link")) {
-                        url = "http://helios.pl" + aElement.getAttribute("href");
-                        title = aElement.getTextContent().trim();
-                    } else if (aElement.hasAttribute("class") && aElement.getAttribute("class").equals("hour-link fancybox-reservation")) {
-                        String hour = aElement.getTextContent();
-                        String hourUrl = "http://helios.pl" + aElement.getAttribute("href");
-
-                        hours.add(new Seance(hour, hourUrl));
+                            hours.add(new Seance(hour, hourUrl));
+                        }
                     }
-                }
-                if (!hours.isEmpty())
-                    days.get(day).getFilms().add(new Film(title, url, hours));
-            }
-        }
+                    if (!hours.isEmpty())
+                        days.get(day).getFilms().add(new Film(title, url, hours));
+                });
+    }
+
+    private SeanceDay extractSeanceDayFromDomElement(DomElement e) {
+        String dayOfWeek = e.getElementsByTagName("abbr").get(0).getTextContent();
+        String dayOfMonth = e.getElementsByTagName("strong").get(0).getTextContent();
+        String month = e.getElementsByTagName("em").get(0).getTextContent();
+
+        return new SeanceDay(
+                dayOfWeek + " " + dayOfMonth + " " + month,
+                new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
+        );
     }
 }
