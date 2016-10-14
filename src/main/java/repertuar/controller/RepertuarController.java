@@ -18,6 +18,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import repertuar.model.*;
+import repertuar.utils.Website;
 import repertuar.view.RepertuarView;
 
 public class RepertuarController {
@@ -61,7 +62,7 @@ public class RepertuarController {
             Task task = new Task() {
                 @Override
                 protected Void call() throws Exception {
-                    Platform.runLater(() -> view.setWaitCursor());
+                    Platform.runLater(view::setWaitCursor);
                     cinema.loadDays();
                     Platform.runLater(() -> {
                         view.bindDays(cinema.getDays());

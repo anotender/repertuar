@@ -1,86 +1,93 @@
 package repertuar.model.multikino;
 
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import repertuar.model.*;
+import repertuar.model.Cinema;
+import repertuar.model.Film;
+import repertuar.model.Seance;
+import repertuar.model.SeanceDay;
+import repertuar.utils.HttpUtils;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MultikinoCinema extends Cinema {
 
-    private int cinemaNumber;
+    private Integer cinemaID;
+    private Integer cityID;
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public MultikinoCinema(String name, String city, String website, int cinemaNumber) {
-        super(name, city, website);
-        this.cinemaNumber = cinemaNumber;
+    public MultikinoCinema(String name, String city, String url, Integer cinemaID, Integer cityID) {
+        super(name, city, url);
+        this.cinemaID = cinemaID;
+        this.cityID = cityID;
     }
 
     @Override
     public void loadDays() throws IOException {
-        new Website(prepareCinemaRepertoireUrl())
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("div")
+        Map<String, String> params = new HashMap<>();
+        params.put("id", cinemaID.toString());
+
+        HttpUtils
+                .sendGet("https://multikino.pl/pl/repertoire/cinema/dates", params)
+                .getJSONArray("results")
+                .toList()
                 .stream()
-                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").equals("day-item"))
-                .map(e -> {
-                    String dateString = e.getTextContent().replaceAll("\n", "").trim().replaceAll("\\s+", " ");
-                    return new SeanceDay(
-                            dateString + ":" + e.getAttribute("data-date"),
-                            new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()))
-                    );
-                })
+                .filter(o -> o instanceof Map)
+                .map(Map.class::cast)
+                .map(this::prepareSeanceDay)
                 .forEach(days::add);
     }
 
     @Override
     public void loadFilms(int day, String date) throws IOException {
-        new Website(prepareDayRepertoireUrl(date))
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("li")
+        Map<String, String> params = new HashMap<>();
+        params.put("id", cinemaID.toString());
+        params.put("from", date);
+
+        List<Film> films = HttpUtils
+                .sendGet("https://multikino.pl/pl/repertoire/cinema/seances", params)
+                .getJSONArray("results")
+                .toList()
                 .stream()
-                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").contains("genre-7"))
-                .forEach(e -> {
-                    LinkedList<Seance> hours = new LinkedList<>();
-                    e.getElementsByTagName("a").forEach(htmlElement -> {
-                        if ("showing-popup-trigger active".equals(htmlElement.getAttribute("class"))) {
-                            String seanceUrl = "https://multikino.pl/kup-bilet2/";
-                            seanceUrl += htmlElement.getAttribute("data-eventid");
-                            seanceUrl += "/";
-                            seanceUrl += cinemaNumber;
-                            seanceUrl += "/";
-                            seanceUrl += htmlElement.getAttribute("datatype");
-                            seanceUrl += "/";
-                            seanceUrl += htmlElement.getAttribute("data-seanceid");
-                            seanceUrl += "/wybierz-miejsce";
+                .filter(o -> o instanceof Map)
+                .map(Map.class::cast)
+                .map(this::prepareFilm)
+                .collect(Collectors.toList());
 
-                            hours.add(
-                                    new Seance(
-                                            htmlElement.getTextContent().trim(),
-                                            seanceUrl
-                                    )
-                            );
-                        } else if ("title".equals(htmlElement.getAttribute("class"))) {
-                            String title = htmlElement.getTextContent().trim();
-                            String url = htmlElement.getAttribute("href");
-                            days.get(day).getFilms().add(new Film(title, url, hours));
-                        }
-                    });
-                });
+        days.get(day).setFilms(FXCollections.observableList(films));
     }
 
-    private String prepareCinemaRepertoireUrl() {
-        return url.get().substring(0, url.get().length() - 2).replaceAll("wszystkie-kina", "repertuar")
-                + "/" + dateFormat.format(new Date());
+    private SeanceDay prepareSeanceDay(Map m) {
+        return new SeanceDay(
+                ((String) m.get("beginning_date")).substring(0, 10),
+                FXCollections.observableList(new LinkedList<>())
+        );
     }
 
-    private String prepareDayRepertoireUrl(String date) {
-        return url.get().substring(0, url.get().length() - 2).replaceAll("wszystkie-kina", "repertuar")
-                + "/" + date.substring(date.indexOf(":") + 1);
+    private Seance prepareSeance(Map m) {
+        return new Seance(
+                ((String) m.get("beginning_date")).substring(11, 16),
+                "http://onet.pl"
+        );
+    }
+
+    private Film prepareFilm(Map m) {
+        List<Seance> seances = ((List<Map>) m.get("seances"))
+                .stream()
+                .map(this::prepareSeance)
+                .collect(Collectors.toList());
+
+        return new Film(
+                m.get("title") + " " + m.get("version_name"),
+                "https://multikino.pl/pl/filmy/" + m.get("slug"),
+                seances
+        );
     }
 
 

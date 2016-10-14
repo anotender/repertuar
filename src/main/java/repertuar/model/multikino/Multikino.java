@@ -1,11 +1,12 @@
 package repertuar.model.multikino;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import repertuar.model.Chain;
 import repertuar.model.Cinema;
-import repertuar.model.Website;
+import repertuar.utils.HttpUtils;
+import repertuar.utils.Website;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class Multikino extends Chain {
 
@@ -15,19 +16,23 @@ public class Multikino extends Chain {
 
     @Override
     public void loadCinemas() throws IOException {
-        new Website("https://multikino.pl/pl/nasze-kina")
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("a")
+        HttpUtils
+                .sendGet("https://multikino.pl/pl/repertoire/cinema/index")
+                .getJSONArray("results")
+                .toList()
                 .stream()
-                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").equals("title"))
+                .filter(o -> o instanceof Map)
+                .map(Map.class::cast)
                 .map(this::extractCinema)
                 .forEach(cinemas::add);
     }
 
-    private Cinema extractCinema(DomElement e) {
-        String url = "https://multikino.pl" + e.getAttribute("href");
-        String city = e.getTextContent();
-        int cinemaNumber = Integer.parseInt(e.getAttribute("rel"));
-        return new MultikinoCinema(null, city, url, cinemaNumber);
+    private Cinema extractCinema(Map m) {
+        String name = (String) m.get("name");
+        String city = (String) m.get("city");
+        String website = "https://multikino.pl/pl/repertuar/" + m.get("slug");
+        Integer cinemaID = Integer.parseInt((String) m.get("id"));
+        Integer cityID = Integer.parseInt((String) m.get("city_id"));
+        return new MultikinoCinema(name, city, website, cinemaID, cityID);
     }
 }

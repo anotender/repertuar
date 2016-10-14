@@ -3,7 +3,7 @@ package repertuar.model.cinemaCity;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import repertuar.model.Chain;
-import repertuar.model.Website;
+import repertuar.utils.Website;
 
 import java.io.IOException;
 import java.util.List;

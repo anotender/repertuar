@@ -1,7 +1,7 @@
 package repertuar.model.helios;
 
 import repertuar.model.Chain;
-import repertuar.model.Website;
+import repertuar.utils.Website;
 
 import java.io.IOException;
 

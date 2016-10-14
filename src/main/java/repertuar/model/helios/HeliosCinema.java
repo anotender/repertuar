@@ -4,7 +4,11 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import repertuar.model.*;
+import repertuar.model.Cinema;
+import repertuar.model.Film;
+import repertuar.model.Seance;
+import repertuar.model.SeanceDay;
+import repertuar.utils.Website;
 
 import java.io.IOException;
 import java.util.LinkedList;

@@ -1,6 +1,7 @@
 package repertuar.model;
 
 import javafx.beans.property.SimpleStringProperty;
+import repertuar.utils.Website;
 
 public class Seance {
     private SimpleStringProperty stringToShow;
