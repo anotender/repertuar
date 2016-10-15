@@ -70,17 +70,20 @@ public class MultikinoCinema extends Cinema {
         );
     }
 
-    private Seance prepareSeance(Map m) {
+    private Seance prepareSeance(Map m, int eventID) {
         return new Seance(
                 ((String) m.get("beginning_date")).substring(11, 16),
-                "http://onet.pl"
+                "https://multikino.pl/kup-bilet2/" + eventID
         );
     }
 
     private Film prepareFilm(Map m) {
         List<Seance> seances = ((List<Map>) m.get("seances"))
                 .stream()
-                .map(this::prepareSeance)
+                .map(s -> {
+                    int eventID = Integer.parseInt((String) m.get("event_id"));
+                    return prepareSeance(s, eventID);
+                })
                 .collect(Collectors.toList());
 
         return new Film(
@@ -89,6 +92,5 @@ public class MultikinoCinema extends Cinema {
                 seances
         );
     }
-
 
 }
