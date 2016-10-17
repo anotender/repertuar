@@ -1,27 +1,22 @@
 package repertuar.model;
 
-import javafx.beans.property.SimpleStringProperty;
 import repertuar.utils.Website;
 
 public class Seance {
-    private SimpleStringProperty stringToShow;
+    private String hour;
     private Website website;
 
-    public Seance(String stringToShow, String url) {
-        this.stringToShow = new SimpleStringProperty(stringToShow);
+    public Seance(String hour, String url) {
+        this.hour = hour;
         this.website = new Website(url);
     }
 
-    public String getStringToShow() {
-        return stringToShow.get();
+    public String getHour() {
+        return hour;
     }
 
-    public SimpleStringProperty stringToShowProperty() {
-        return stringToShow;
-    }
-
-    public void setStringToShow(String stringToShow) {
-        this.stringToShow.set(stringToShow);
+    public void setHour(String hour) {
+        this.hour = hour;
     }
 
     public Website getWebsite() {
@@ -30,5 +25,10 @@ public class Seance {
 
     public void setWebsite(Website website) {
         this.website = website;
+    }
+
+    @Override
+    public String toString() {
+        return hour;
     }
 }

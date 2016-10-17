@@ -1,41 +1,46 @@
 package repertuar.model;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import repertuar.utils.Website;
 
 import java.util.List;
 
 public class Film {
-    private final SimpleStringProperty title;
-    private final Website website;
-    private final SimpleListProperty<Seance> seances;
+    private String title;
+    private Website website;
+    private List<Seance> seances;
 
-    public Film(String title, String url, List<Seance> hours) {
-        this.title = new SimpleStringProperty(title);
+    public Film(String title, String url, List<Seance> seances) {
+        this.title = title;
         this.website = new Website(url);
-        this.seances = new SimpleListProperty<>(FXCollections.observableList(hours));
-    }
-
-    public SimpleStringProperty titleProperty() {
-        return title;
+        this.seances = seances;
     }
 
     public String getTitle() {
-        return title.get();
+        return title;
     }
 
     public void setTitle(String title) {
-        this.title.set(title);
-    }
-
-    public SimpleListProperty<Seance> getHours() {
-        return seances;
+        this.title = title;
     }
 
     public Website getWebsite() {
         return website;
     }
 
+    public void setWebsite(Website website) {
+        this.website = website;
+    }
+
+    public List<Seance> getSeances() {
+        return seances;
+    }
+
+    public void setSeances(List<Seance> seances) {
+        this.seances = seances;
+    }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }

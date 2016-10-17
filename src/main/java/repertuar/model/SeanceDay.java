@@ -1,40 +1,36 @@
 package repertuar.model;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class SeanceDay {
-    private SimpleStringProperty stringToShow;
-    private SimpleListProperty<Film> films;
+    private Date date;
+    private List<Film> films;
 
-    public SeanceDay(String stringToShow, ObservableList<Film> films) {
-        this.stringToShow = new SimpleStringProperty(stringToShow);
-        this.films = new SimpleListProperty<>(FXCollections.observableList(films));
+    public SeanceDay(Date date, List<Film> films) {
+        this.date = date;
+        this.films = films;
     }
 
-    public String getStringToShow() {
-        return stringToShow.get();
+    public Date getDate() {
+        return date;
     }
 
-    public SimpleStringProperty stringToShowProperty() {
-        return stringToShow;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public void setStringToShow(String stringToShow) {
-        this.stringToShow.set(stringToShow);
-    }
-
-    public SimpleListProperty<Film> filmsProperty() {
+    public List<Film> getFilms() {
         return films;
     }
 
-    public void setFilms(ObservableList<Film> films) {
-        this.films.set(films);
+    public void setFilms(List<Film> films) {
+        this.films = films;
     }
 
-    public ObservableList<Film> getFilms() {
-        return films.get();
+    @Override
+    public String toString() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 }

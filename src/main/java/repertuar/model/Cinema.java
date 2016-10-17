@@ -1,67 +1,55 @@
 package repertuar.model;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-
-import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class Cinema {
 
-    protected final SimpleStringProperty name;
-    protected final SimpleStringProperty city;
-    protected final SimpleStringProperty url;
-    protected final SimpleListProperty<SeanceDay> days = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
+    protected Integer id;
+    protected String name;
+    protected String url;
+    protected List<SeanceDay> days = Collections.emptyList();
 
-    public Cinema(String name, String city, String url) {
-        this.name = new SimpleStringProperty(name);
-        this.city = new SimpleStringProperty(city);
-        this.url = new SimpleStringProperty(url);
+    public Cinema(Integer id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
     }
 
-    public SimpleStringProperty nameProperty() {
-        return name;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
-        return name.get();
+        return name;
     }
 
     public void setName(String name) {
-        this.name.set(name);
-    }
-
-    public SimpleStringProperty cityProperty() {
-        return city;
-    }
-
-    public String getCity() {
-        return city.get();
-    }
-
-    public void setCity(String city) {
-        this.city.set(city);
-    }
-
-    public SimpleStringProperty urlProperty() {
-        return url;
+        this.name = name;
     }
 
     public String getUrl() {
-        return url.get();
+        return url;
     }
 
     public void setUrl(String url) {
-        this.url.set(url);
+        this.url = url;
     }
 
-    public SimpleListProperty getDays() {
+    public List<SeanceDay> getDays() {
         return days;
     }
 
-    public abstract void loadDays() throws IOException;
+    public void setDays(List<SeanceDay> days) {
+        this.days = days;
+    }
 
-    public abstract void loadFilms(int day, String date) throws IOException;
-
+    @Override
+    public String toString() {
+        return name;
+    }
 }

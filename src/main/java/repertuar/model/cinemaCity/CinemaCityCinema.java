@@ -4,17 +4,8 @@ import repertuar.model.Cinema;
 
 public class CinemaCityCinema extends Cinema {
 
-    public CinemaCityCinema(String name, String city, String website) {
-        super(name, city, website);
+    public CinemaCityCinema(Integer id, String name, String url) {
+        super(id, name, url);
     }
 
-    @Override
-    public void loadDays() {
-        System.out.println(url.get());
-    }
-
-    @Override
-    public void loadFilms(int day, String date) {
-
-    }
 }

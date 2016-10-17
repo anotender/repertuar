@@ -1,32 +1,47 @@
 package repertuar.model;
 
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.FXCollections;
 import repertuar.utils.Website;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class Chain {
 
     protected String name;
     protected Website website;
-    protected final SimpleListProperty<Cinema> cinemas = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>()));
+    protected List<Cinema> cinemas = Collections.emptyList();
 
-    public Chain(String name, Website website) {
+    public Chain(String name, String url) {
         this.name = name;
+        this.website = new Website(url);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Website getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(Website website) {
         this.website = website;
     }
 
-    public SimpleListProperty<Cinema> getCinemas() {
+    public List<Cinema> getCinemas() {
         return cinemas;
+    }
+
+    public void setCinemas(List<Cinema> cinemas) {
+        this.cinemas = cinemas;
     }
 
     @Override
     public String toString() {
         return name;
     }
-
-    public abstract void loadCinemas() throws IOException;
-
 }
