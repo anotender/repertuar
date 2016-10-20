@@ -7,20 +7,16 @@ import repertuar.model.SeanceDay;
 import repertuar.model.cinemaCity.CinemaCity;
 import repertuar.model.helios.Helios;
 import repertuar.model.multikino.Multikino;
-import repertuar.model.multikino.MultikinoCinema;
-import repertuar.service.impl.CinemaCityService;
-import repertuar.service.impl.MultikinoService;
+import repertuar.service.factory.ServiceFactory;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class RepertuarController {
 
-    private MultikinoService multikinoService = new MultikinoService();
-    private CinemaCityService cinemaCityService = new CinemaCityService();
+    private ServiceFactory serviceFactory = new ServiceFactory();
 
     public List<Chain> getChains() {
         List<Chain> chains = new LinkedList<>();
@@ -32,26 +28,24 @@ public class RepertuarController {
         return chains;
     }
 
-    public List<Cinema> getCinemas(Chain chain) throws IOException {
-        if (chain instanceof Multikino) {
-            return multikinoService.getCinemas();
-        } else if (chain instanceof CinemaCity) {
-            return cinemaCityService.getCinemas();
-        }
-        return Collections.emptyList();
+    public List<Cinema> getCinemas(Chain chain) throws Exception {
+        return Optional
+                .of(serviceFactory.getService(chain))
+                .orElseThrow(Exception::new)
+                .getCinemas();
     }
 
-    public List<SeanceDay> getSeanceDays(Cinema cinema) throws IOException {
-        if (cinema instanceof MultikinoCinema) {
-            return multikinoService.getSeanceDays(cinema.getId());
-        }
-        return Collections.emptyList();
+    public List<SeanceDay> getSeanceDays(Cinema cinema) throws Exception {
+        return Optional
+                .of(serviceFactory.getService(cinema))
+                .orElseThrow(Exception::new)
+                .getSeanceDays(cinema.getId());
     }
 
-    public List<Film> getFilms(Cinema cinema, Date date) throws IOException {
-        if (cinema instanceof MultikinoCinema) {
-            return multikinoService.getFilms(cinema.getId(), date);
-        }
-        return Collections.emptyList();
+    public List<Film> getFilms(Cinema cinema, Date date) throws Exception {
+        return Optional
+                .of(serviceFactory.getService(cinema))
+                .orElseThrow(Exception::new)
+                .getFilms(cinema.getId(), date);
     }
 }

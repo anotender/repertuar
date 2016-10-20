@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import repertuar.controller.RepertuarController;
 import repertuar.model.*;
 
-import java.io.IOException;
 import java.util.Date;
 
 public class RepertuarView {
@@ -107,7 +106,7 @@ public class RepertuarView {
     private void loadCinemas(Chain chain) {
         try {
             cinemas.setItems(FXCollections.observableList(controller.getCinemas(chain)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
         }
@@ -117,7 +116,7 @@ public class RepertuarView {
         try {
             seanceDays.setItems(FXCollections.observableList(controller.getSeanceDays(cinema)));
             seanceDays.getSelectionModel().selectFirst();
-        } catch (IOException e) {
+        } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
         }
@@ -126,7 +125,7 @@ public class RepertuarView {
     private void loadFilms(Cinema cinema, Date date) {
         try {
             films.setItems(FXCollections.observableList(controller.getFilms(cinema, date)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
         }
@@ -148,7 +147,7 @@ public class RepertuarView {
         seances.getItems().clear();
     }
 
-    private void showErrorInfo(IOException e) {
+    private void showErrorInfo(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Błąd");
         alert.setHeaderText("Wystąpił błąd podczas ładowania treści");
