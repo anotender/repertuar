@@ -17,16 +17,6 @@ public class Website {
     }
 
     private final String url;
-    private HtmlPage loadedPage;
-
-    public static boolean isInternetConnectionAvailible() {
-        try {
-            new URL("http://www.google.com").openConnection();
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
 
     public Website(String url) {
         this.url = url;
@@ -34,15 +24,14 @@ public class Website {
 
     public HtmlPage loadPageWithJavaScriptEnabled() throws IOException {
         WEB_CLIENT.getOptions().setJavaScriptEnabled(true);
-        loadedPage = WEB_CLIENT.getPage(url);
+        HtmlPage loadedPage = WEB_CLIENT.getPage(url);
         WEB_CLIENT.waitForBackgroundJavaScript(30 * 1000); /* will wait JavaScript to execute up to 30s */
         return loadedPage;
     }
 
     public HtmlPage loadPageWithJavaScriptDisabled() throws IOException {
         WEB_CLIENT.getOptions().setJavaScriptEnabled(false);
-        loadedPage = WEB_CLIENT.getPage(url);
-        return loadedPage;
+        return WEB_CLIENT.getPage(url);
     }
 
     public void open() throws Exception {

@@ -69,7 +69,6 @@ public class CinemaCityService implements ChainService {
         return new CinemaCityCinema(Integer.parseInt(e.getAttribute("data-site_id")), e.getTextContent(), "https://cinema-city/");
     }
 
-    // TODO: 23.10.2016 zacina się 
     private Film prepareFilm(DomElement element) {
         String title = element
                 .getElementsByTagName("td")
@@ -79,15 +78,15 @@ public class CinemaCityService implements ChainService {
                 .get()
                 .getTextContent();
 
-        title += ", " + element
+        title += element
                 .getElementsByTagName("td")
                 .stream()
                 .map(DomNode::getTextContent)
                 .map(String::trim)
                 .filter(s -> map.containsKey(s))
-                .map(s -> map.get(s))
+                .map(s -> ", " + map.get(s))
                 .findFirst()
-                .get();
+                .orElse("");
 
         List<Seance> seances = element
                 .getElementsByTagName("td")
