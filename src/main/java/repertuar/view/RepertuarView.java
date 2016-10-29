@@ -2,12 +2,15 @@ package repertuar.view;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import repertuar.controller.RepertuarController;
 import repertuar.model.*;
 
@@ -21,9 +24,11 @@ public class RepertuarView {
     private BorderPane seanceDayAndFilmsPane = new BorderPane();
     private ComboBox<Chain> chains = new ComboBox<>();
     private ComboBox<SeanceDay> seanceDays = new ComboBox<>();
-    private ListView<Cinema> cinemas = new ListView();
-    private ListView<Film> films = new ListView();
-    private ListView<Seance> seances = new ListView();
+    private ListView<Cinema> cinemas = new ListView<>();
+    private ListView<Film> films = new ListView<>();
+    private ListView<Seance> seances = new ListView<>();
+    private TextField cinemaFilterField = new TextField();
+    private TextField filmFilterField = new TextField();
 
     public RepertuarView(Stage primaryStage, RepertuarController controller) {
         this.primaryStage = primaryStage;
@@ -37,9 +42,10 @@ public class RepertuarView {
                 loadSeanceDays(cinemas.getSelectionModel().getSelectedItem());
             }
         });
+        cinemaFilterField.setPromptText("Szukaj kina...");
         chainAndCinemasPane.setTop(chains);
         chainAndCinemasPane.setCenter(cinemas);
-        chainAndCinemasPane.setBottom(new TextField());
+        chainAndCinemasPane.setBottom(cinemaFilterField);
 
         prepareSeanceDaysComboBox();
         films.setOnMouseClicked(event -> {
@@ -48,9 +54,10 @@ public class RepertuarView {
                 loadSeances(film);
             }
         });
+        filmFilterField.setPromptText("Szukaj filmu...");
         seanceDayAndFilmsPane.setTop(seanceDays);
         seanceDayAndFilmsPane.setCenter(films);
-        seanceDayAndFilmsPane.setBottom(new TextField());
+        seanceDayAndFilmsPane.setBottom(filmFilterField);
 
         SplitPane splitPane = new SplitPane(chainAndCinemasPane, seanceDayAndFilmsPane, seances);
         splitPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
@@ -105,7 +112,15 @@ public class RepertuarView {
 
     private void loadCinemas(Chain chain) {
         try {
-            cinemas.setItems(FXCollections.observableList(controller.getCinemas(chain)));
+            ObservableList<Cinema> baseList = FXCollections.observableList(controller.getCinemas(chain));
+            FilteredList<Cinema> filteredList = new FilteredList<>(baseList, c -> true);
+            cinemaFilterField.textProperty().addListener((observable, oldValue, newValue) ->
+                    filteredList.setPredicate(c ->
+                            StringUtils.isEmpty(newValue) ||
+                                    StringUtils.containsIgnoreCase(c.getName(), newValue)
+                    )
+            );
+            cinemas.setItems(filteredList);
         } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
@@ -124,7 +139,15 @@ public class RepertuarView {
 
     private void loadFilms(Cinema cinema, Date date) {
         try {
-            films.setItems(FXCollections.observableList(controller.getFilms(cinema, date)));
+            ObservableList<Film> baseList = FXCollections.observableList(controller.getFilms(cinema, date));
+            FilteredList<Film> filteredList = new FilteredList<>(baseList, c -> true);
+            filmFilterField.textProperty().addListener((observable, oldValue, newValue) ->
+                    filteredList.setPredicate(
+                            f -> StringUtils.isEmpty(newValue) ||
+                                    StringUtils.containsIgnoreCase(f.getTitle(), newValue)
+                    )
+            );
+            films.setItems(filteredList);
         } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
