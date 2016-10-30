@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpUtils {
 
@@ -25,14 +26,11 @@ public class HttpUtils {
         HttpResponse getResponse = client.execute(getRequest);
         getRequest.releaseConnection();
 
-        BufferedReader rd = new BufferedReader(new InputStreamReader(getResponse.getEntity().getContent(), "UTF-8"));
-        StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
-        }
+        String content = new BufferedReader(new InputStreamReader(getResponse.getEntity().getContent(), "UTF-8"))
+                .lines()
+                .collect(Collectors.joining("\n"));
 
-        return new JSONObject(result.toString());
+        return new JSONObject(content);
     }
 
     private static String prepareGetUrl(String url, Map<String, String> params) {

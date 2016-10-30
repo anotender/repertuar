@@ -59,6 +59,17 @@ public class RepertuarView {
         seanceDayAndFilmsPane.setCenter(films);
         seanceDayAndFilmsPane.setBottom(filmFilterField);
 
+        seances.setOnMouseClicked(event -> {
+            Seance seance = seances.getSelectionModel().getSelectedItem();
+            if (seance != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                try {
+                    seance.getWebsite().open();
+                } catch (Exception e) {
+                    showErrorInfo(e);
+                }
+            }
+        });
+
         SplitPane splitPane = new SplitPane(chainAndCinemasPane, seanceDayAndFilmsPane, seances);
         splitPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
 
@@ -81,6 +92,8 @@ public class RepertuarView {
                     Platform.runLater(() -> {
                         chainAndCinemasPane.setCenter(new ProgressIndicator());
                         clearFilms();
+                        clearSeances();
+                        clearSeanceDays();
                     });
                     loadCinemas(newValue);
                     Platform.runLater(() -> chainAndCinemasPane.setCenter(cinemas));
@@ -98,7 +111,11 @@ public class RepertuarView {
                 Task task = new Task() {
                     @Override
                     protected Object call() throws Exception {
-                        Platform.runLater(() -> seanceDayAndFilmsPane.setCenter(new ProgressIndicator()));
+                        Platform.runLater(() -> {
+                            seanceDayAndFilmsPane.setCenter(new ProgressIndicator());
+                            clearSeances();
+                            clearFilms();
+                        });
                         Cinema cinema = cinemas.getSelectionModel().getSelectedItem();
                         loadFilms(cinema, newValue.getDate());
                         Platform.runLater(() -> seanceDayAndFilmsPane.setCenter(films));
@@ -159,15 +176,15 @@ public class RepertuarView {
     }
 
     private void clearFilms() {
-        films.getItems().clear();
+        films.setItems(FXCollections.emptyObservableList());
     }
 
     private void clearSeanceDays() {
-        seanceDays.getItems().clear();
+        seanceDays.setItems(FXCollections.emptyObservableList());
     }
 
     private void clearSeances() {
-        seances.getItems().clear();
+        seances.setItems(FXCollections.emptyObservableList());
     }
 
     private void showErrorInfo(Exception e) {
