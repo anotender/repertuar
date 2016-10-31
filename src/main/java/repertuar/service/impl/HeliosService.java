@@ -99,9 +99,7 @@ public class HeliosService implements ChainService {
     }
 
     private String extractTitle(DomElement element) {
-        StringBuilder title = new StringBuilder();
-
-        element
+        return element
                 .getElementsByTagName("a")
                 .stream()
                 .filter(e -> e.hasAttribute("class") && "movie-link".equals(e.getAttribute("class")))
@@ -114,9 +112,7 @@ public class HeliosService implements ChainService {
                     }
                     return s;
                 })
-                .forEach(title::append);
-
-        return title.toString();
+                .collect(Collectors.joining());
     }
 
     private List<Seance> extractSeances(DomElement element) {

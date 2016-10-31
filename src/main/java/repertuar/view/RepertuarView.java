@@ -7,6 +7,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -42,6 +43,13 @@ public class RepertuarView {
                 loadSeanceDays(cinemas.getSelectionModel().getSelectedItem());
             }
         });
+        cinemas.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                clearSeanceDays();
+                clearSeances();
+                loadSeanceDays(cinemas.getSelectionModel().getSelectedItem());
+            }
+        });
         cinemaFilterField.setPromptText("Szukaj kina...");
         chainAndCinemasPane.setTop(chains);
         chainAndCinemasPane.setCenter(cinemas);
@@ -54,6 +62,12 @@ public class RepertuarView {
                 loadSeances(film);
             }
         });
+        films.setOnKeyPressed(event -> {
+            Film film = films.getSelectionModel().getSelectedItem();
+            if (film != null && event.getCode().equals(KeyCode.ENTER)) {
+                loadSeances(film);
+            }
+        });
         filmFilterField.setPromptText("Szukaj filmu...");
         seanceDayAndFilmsPane.setTop(seanceDays);
         seanceDayAndFilmsPane.setCenter(films);
@@ -62,6 +76,16 @@ public class RepertuarView {
         seances.setOnMouseClicked(event -> {
             Seance seance = seances.getSelectionModel().getSelectedItem();
             if (seance != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+                try {
+                    seance.getWebsite().open();
+                } catch (Exception e) {
+                    showErrorInfo(e);
+                }
+            }
+        });
+        seances.setOnKeyPressed(event -> {
+            Seance seance = seances.getSelectionModel().getSelectedItem();
+            if (seance != null && event.getCode().equals(KeyCode.ENTER)) {
                 try {
                     seance.getWebsite().open();
                 } catch (Exception e) {
@@ -137,7 +161,7 @@ public class RepertuarView {
                                     StringUtils.containsIgnoreCase(c.getName(), newValue)
                     )
             );
-            cinemas.setItems(filteredList);
+            Platform.runLater(() -> cinemas.setItems(filteredList));
         } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
@@ -164,7 +188,7 @@ public class RepertuarView {
                                     StringUtils.containsIgnoreCase(f.getTitle(), newValue)
                     )
             );
-            films.setItems(filteredList);
+            Platform.runLater(() -> films.setItems(filteredList));
         } catch (Exception e) {
             showErrorInfo(e);
             e.printStackTrace();
