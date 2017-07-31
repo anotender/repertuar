@@ -13,32 +13,34 @@ import repertuar.service.impl.CinemaCityService;
 import repertuar.service.impl.HeliosService;
 import repertuar.service.impl.MultikinoService;
 
+import java.util.Optional;
+
 public class ServiceFactory {
 
-    private MultikinoService multikinoService = new MultikinoService();
-    private CinemaCityService cinemaCityService = new CinemaCityService();
-    private HeliosService heliosService = new HeliosService();
+    private static final MultikinoService MULTIKINO_SERVICE = new MultikinoService();
+    private static final CinemaCityService CINEMA_CITY_SERVICE = new CinemaCityService();
+    private static final HeliosService HELIOS_SERVICE = new HeliosService();
 
-    public ChainService getService(Chain c) {
+    public static Optional<ChainService> getService(Chain c) {
         if (c instanceof Multikino) {
-            return multikinoService;
+            return Optional.of(MULTIKINO_SERVICE);
         } else if (c instanceof CinemaCity) {
-            return cinemaCityService;
+            return Optional.of(CINEMA_CITY_SERVICE);
         } else if (c instanceof Helios) {
-            return heliosService;
+            return Optional.of(HELIOS_SERVICE);
         }
-        return null;
+        return Optional.empty();
     }
 
-    public ChainService getService(Cinema c) {
+    public static Optional<ChainService> getService(Cinema c) {
         if (c instanceof MultikinoCinema) {
-            return multikinoService;
+            return Optional.of(MULTIKINO_SERVICE);
         } else if (c instanceof CinemaCityCinema) {
-            return cinemaCityService;
+            return Optional.of(CINEMA_CITY_SERVICE);
         } else if (c instanceof HeliosCinema) {
-            return heliosService;
+            return Optional.of(HELIOS_SERVICE);
         }
-        return null;
+        return Optional.empty();
     }
 
 }

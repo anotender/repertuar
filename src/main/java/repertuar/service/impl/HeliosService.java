@@ -9,6 +9,7 @@ import repertuar.model.Seance;
 import repertuar.model.SeanceDay;
 import repertuar.model.helios.HeliosCinema;
 import repertuar.service.api.ChainService;
+import repertuar.utils.RepertoireUtils;
 import repertuar.utils.Website;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 public class HeliosService implements ChainService {
@@ -39,18 +41,7 @@ public class HeliosService implements ChainService {
 
     @Override
     public List<SeanceDay> getSeanceDays(Integer cinemaID) throws IOException {
-        List<SeanceDay> seanceDays = new LinkedList<>();
-
-        for (int i = 0; i < 7; i++) {
-            seanceDays.add(
-                    new SeanceDay(
-                            DateUtils.addDays(new Date(), i),
-                            Collections.emptyList()
-                    )
-            );
-        }
-
-        return seanceDays;
+        return RepertoireUtils.getSeanceDays(7);
     }
 
     @Override

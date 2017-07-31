@@ -12,11 +12,8 @@ import repertuar.service.factory.ServiceFactory;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 public class RepertuarController {
-
-    private ServiceFactory serviceFactory = new ServiceFactory();
 
     public List<Chain> getChains() {
         List<Chain> chains = new LinkedList<>();
@@ -29,22 +26,22 @@ public class RepertuarController {
     }
 
     public List<Cinema> getCinemas(Chain chain) throws Exception {
-        return Optional
-                .of(serviceFactory.getService(chain))
+        return ServiceFactory
+                .getService(chain)
                 .orElseThrow(Exception::new)
                 .getCinemas();
     }
 
     public List<SeanceDay> getSeanceDays(Cinema cinema) throws Exception {
-        return Optional
-                .of(serviceFactory.getService(cinema))
+        return ServiceFactory
+                .getService(cinema)
                 .orElseThrow(Exception::new)
                 .getSeanceDays(cinema.getId());
     }
 
     public List<Film> getFilms(Cinema cinema, Date date) throws Exception {
-        return Optional
-                .of(serviceFactory.getService(cinema))
+        return ServiceFactory
+                .getService(cinema)
                 .orElseThrow(Exception::new)
                 .getFilms(cinema.getId(), date);
     }

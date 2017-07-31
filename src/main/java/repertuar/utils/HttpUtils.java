@@ -4,6 +4,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class HttpUtils {
 
-    private static HttpClient client = HttpClientBuilder.create().build();
+    private static final HttpClient client = HttpClientBuilder.create().build();
 
     public static JSONObject sendGet(String url) throws IOException {
         return sendGet(url, Collections.emptyMap());
@@ -24,11 +25,12 @@ public class HttpUtils {
     public static JSONObject sendGet(String url, Map<String, String> params) throws IOException {
         HttpGet getRequest = new HttpGet(prepareGetUrl(url, params));
         HttpResponse getResponse = client.execute(getRequest);
-        getRequest.releaseConnection();
 
         String content = new BufferedReader(new InputStreamReader(getResponse.getEntity().getContent(), "UTF-8"))
                 .lines()
                 .collect(Collectors.joining("\n"));
+
+        EntityUtils.consume(getResponse.getEntity());
 
         return new JSONObject(content);
     }

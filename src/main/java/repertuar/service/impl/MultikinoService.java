@@ -1,5 +1,7 @@
 package repertuar.service.impl;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import org.apache.commons.lang3.time.DateUtils;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.Seance;
@@ -7,6 +9,8 @@ import repertuar.model.SeanceDay;
 import repertuar.model.multikino.MultikinoCinema;
 import repertuar.service.api.ChainService;
 import repertuar.utils.HttpUtils;
+import repertuar.utils.RepertoireUtils;
+import repertuar.utils.Website;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -21,89 +25,99 @@ public class MultikinoService implements ChainService {
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        return HttpUtils
-                .sendGet("https://multikino.pl/pl/repertoire/cinema/index")
-                .getJSONArray("results")
-                .toList()
+        return new Website("https://multikino.pl/nasze-kina")
+                .loadPageWithJavaScriptDisabled()
+                .getElementsByTagName("li")
                 .stream()
-                .filter(o -> o instanceof Map)
-                .map(Map.class::cast)
-                .map(this::prepareCinema)
+                .filter(e -> e.hasAttribute("class"))
+                .filter(e -> e.getAttribute("class").equals("ml-columns__item"))
+                .map(DomElement::getFirstElementChild)
+                .map(e -> new MultikinoCinema(e.getTextContent(), "https://multikino.pl" + e.getAttribute("href")))
+                .map(this::fetchCinemaId)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<SeanceDay> getSeanceDays(Integer cinemaID) throws IOException {
-        Map<String, String> params = new HashMap<>();
-        params.put("id", cinemaID.toString());
-
-        return HttpUtils
-                .sendGet("https://multikino.pl/pl/repertoire/cinema/dates", params)
-                .getJSONArray("results")
-                .toList()
-                .stream()
-                .filter(o -> o instanceof Map)
-                .map(Map.class::cast)
-                .map(this::prepareSeanceDay)
-                .collect(Collectors.toList());
+    public List<SeanceDay> getSeanceDays(Integer cinemaId) throws IOException {
+        return RepertoireUtils.getSeanceDays(5);
     }
 
     @Override
-    public List<Film> getFilms(Integer cinemaID, Date date) throws IOException {
-        Map<String, String> params = new HashMap<>();
-        params.put("id", cinemaID.toString());
-        params.put("from", df.format(date));
-
+    public List<Film> getFilms(Integer cinemaId, Date date) throws IOException {
         return HttpUtils
-                .sendGet("https://multikino.pl/pl/repertoire/cinema/seances", params)
-                .getJSONArray("results")
+                .sendGet("https://multikino.pl/data/filmswithshowings/" + cinemaId)
+                .getJSONArray("films")
                 .toList()
                 .stream()
                 .filter(o -> o instanceof Map)
                 .map(Map.class::cast)
-                .map(this::prepareFilm)
+                .filter(this::isNowPlaying)
+                .filter(m -> matchesDate(m, date))
+                .map(m -> prepareFilm(m, cinemaId, date))
                 .collect(Collectors.toList());
     }
 
-    private Cinema prepareCinema(Map m) {
-        String name = (String) m.get("name");
-        String website = "https://multikino.pl/pl/repertuar/" + m.get("slug");
-        Integer cinemaID = Integer.parseInt((String) m.get("id"));
-        Integer cityID = Integer.parseInt((String) m.get("city_id"));
-        return new MultikinoCinema(cinemaID, name, website, cityID);
-    }
-
-    private SeanceDay prepareSeanceDay(Map m) {
+    private MultikinoCinema fetchCinemaId(MultikinoCinema c) {
         try {
-            return new SeanceDay(
-                    df.parse((String) m.get("beginning_date")),
-                    Collections.emptyList()
-            );
-        } catch (ParseException e) {
-            e.printStackTrace();
+            String stringId = new Website(c.getUrl() + "/repertuar")
+                    .loadPageWithJavaScriptDisabled()
+                    .getBody()
+                    .getAttribute("data-selected-locationid");
+
+            c.setId(Integer.parseInt(stringId));
+        } catch (Exception ignored) {
         }
-        return null;
+        return c;
     }
 
-    private Seance prepareSeance(Map m, int eventID) {
+    private boolean matchesDate(Map m, Date date) {
+        return ((List<Map>) m.get("showings"))
+                .stream()
+                .map(s -> {
+                    try {
+                        return df.parse(s.get("date_time").toString());
+                    } catch (ParseException e) {
+                        return new Date();
+                    }
+                })
+                .anyMatch(d -> DateUtils.isSameDay(date, d));
+    }
+
+    private boolean isNowPlaying(Map m) {
+        boolean hasSeances = (int) m.get("original_s_count") > 0;
+        boolean comingSoon = (boolean) m.get("coming_soon");
+        boolean announcement = (boolean) m.get("announcement");
+        return hasSeances && !comingSoon && !announcement;
+    }
+
+    private Seance prepareSeance(Map m, int filmId, int cinemaId) {
+        String versionId = m.get("version_id").toString();
+        String sessionId = m.get("session_id").toString();
         return new Seance(
-                ((String) m.get("beginning_date")).substring(11, 16),
-                "https://multikino.pl/kup-bilet2/" + eventID
+                m.get("time").toString(),
+                "https://multikino.pl/kupbilet/" + filmId + "/" + cinemaId + "/" + versionId + "/" + sessionId + "/wybierz-miejsce"
         );
     }
 
-    private Film prepareFilm(Map m) {
-        List<Seance> seances = ((List<Map>) m.get("seances"))
+    private Film prepareFilm(Map m, int cinemaId, Date date) {
+        int filmId = Integer.parseInt(m.get("id").toString());
+
+        List<Seance> seances = ((List<Map>) m.get("showings"))
                 .stream()
-                .map(s -> {
-                    int eventID = Integer.parseInt((String) m.get("event_id"));
-                    return prepareSeance(s, eventID);
+                .filter(s -> {
+                    try {
+                        return DateUtils.isSameDay(date, df.parse(s.get("date_time").toString()));
+                    } catch (ParseException e) {
+                        return false;
+                    }
                 })
+                .flatMap(s -> ((List<Map>) s.get("times")).stream())
+                .map(s -> prepareSeance(s, filmId, cinemaId))
                 .collect(Collectors.toList());
 
         return new Film(
-                m.get("title") + " " + m.get("version_name"),
-                "https://multikino.pl/pl/filmy/" + m.get("slug"),
+                m.get("title").toString(),
+                "https://multikino.pl" + m.get("filmlink").toString(),
                 seances
         );
     }

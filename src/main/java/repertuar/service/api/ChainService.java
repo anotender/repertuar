@@ -12,7 +12,7 @@ public interface ChainService {
 
     List<Cinema> getCinemas() throws IOException;
 
-    List<SeanceDay> getSeanceDays(Integer cinemaID) throws IOException;
+    List<SeanceDay> getSeanceDays(Integer cinemaId) throws IOException;
 
     List<Film> getFilms(Integer cinemaID, Date date) throws IOException;
 
