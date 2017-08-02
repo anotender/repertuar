@@ -1,7 +1,6 @@
 package repertuar.model;
 
 import lombok.Data;
-import lombok.ToString;
 import repertuar.utils.Website;
 
 import java.util.List;
@@ -11,6 +10,10 @@ public class Film {
     private String title;
     private Website website;
     private List<Seance> seances;
+
+    public Film(String title, List<Seance> seances) {
+        this(title, null, seances);
+    }
 
     public Film(String title, String url, List<Seance> seances) {
         this.title = title;

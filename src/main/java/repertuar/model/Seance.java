@@ -8,6 +8,10 @@ public class Seance {
     private String hour;
     private Website website;
 
+    public Seance(String hour) {
+        this(hour, null);
+    }
+
     public Seance(String hour, String url) {
         this.hour = hour;
         this.website = new Website(url);
