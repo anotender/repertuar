@@ -1,8 +1,8 @@
 package repertuar.service.impl;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.DomNode;
 import org.apache.commons.lang3.time.DateUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.Seance;
@@ -10,31 +10,23 @@ import repertuar.model.SeanceDay;
 import repertuar.model.helios.HeliosCinema;
 import repertuar.service.api.ChainService;
 import repertuar.utils.RepertoireUtils;
-import repertuar.utils.Website;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
 public class HeliosService implements ChainService {
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        return new Website("http://helios.pl")
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("div")
+        return Jsoup.connect("http://helios.pl")
+                .get()
+                .body()
+                .select("section.cinema-list")
+                .select("div.list")
+                .select("a[href]")
                 .stream()
-                .filter(e -> e.hasAttribute("class") && "list".equals(e.getAttribute("class")))
-                .findFirst()
-                .orElseThrow(IOException::new)
-                .getElementsByTagName("li")
-                .stream()
-                .flatMap(e -> e.getElementsByTagName("a").stream())
                 .map(this::prepareCinema)
                 .collect(Collectors.toList());
     }
@@ -46,76 +38,38 @@ public class HeliosService implements ChainService {
 
     @Override
     public List<Film> getFilms(Integer cinemaID, Date date) throws IOException {
-        return new Website("http://helios.pl/" + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("li")
+        return Jsoup.connect("http://helios.pl/" + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
+                .get()
+                .body()
+                .select("li.seance")
                 .stream()
-                .filter(e -> e.hasAttribute("class") && "seance".equals(e.getAttribute("class")))
                 .map(this::prepareFilm)
                 .collect(Collectors.toList());
     }
 
-    private Cinema prepareCinema(DomElement e) {
-        String href = e.getAttribute("href");
-        Integer id = Integer.parseInt(
-                href.substring(
-                        href.indexOf('/') + 1,
-                        href.indexOf(',')
-                )
-        );
-
-        String city = e
-                .getElementsByTagName("strong")
-                .stream()
-                .findFirst()
-                .get()
-                .getTextContent();
-
-        String name = e
-                .getElementsByTagName("span")
-                .stream()
-                .findFirst()
-                .get()
-                .getTextContent();
-
-        return new HeliosCinema(id, city + name.replaceFirst("Helios", ""), "http://helios.pl" + href);
+    private Cinema prepareCinema(Element e) {
+        String url = "http://helios.pl" + e.attr("href");
+        Integer id = Integer.parseInt(e.attr("href").substring(1, e.attr("href").indexOf(",")));
+        String name = e.select("strong").text() + e.select("span").text().replace("Helios", "");
+        return new HeliosCinema(id, name, url);
     }
 
-    private Film prepareFilm(DomElement element) {
-        return new Film(
-                extractTitle(element),
-                "http://helios.pl" + element.getAttribute("href"),
-                extractSeances(element)
-        );
-    }
-
-    private String extractTitle(DomElement element) {
-        return element
-                .getElementsByTagName("a")
+    private Film prepareFilm(Element e) {
+        String title = e.select("h2.movie-title").text();
+        String url = "http://helios.pl" + e.select("a.movie-link").attr("href");
+        List<Seance> seances = e
+                .select("a.hour-link.fancybox-reservation")
                 .stream()
-                .filter(e -> e.hasAttribute("class") && "movie-link".equals(e.getAttribute("class")))
-                .flatMap(e -> StreamSupport.stream(e.getChildren().spliterator(), false))
-                .map(DomNode::getTextContent)
-                .map(String::trim)
-                .map(s -> {
-                    if (s.startsWith("/")) {
-                        s = s.replace('/', ',');
-                    }
-                    return s;
-                })
-                .collect(Collectors.joining());
-    }
-
-    private List<Seance> extractSeances(DomElement element) {
-        return element
-                .getElementsByTagName("a")
-                .stream()
-                .filter(e -> e.hasAttribute("class") && e.getAttribute("class").contains("hour-link"))
-                .map(e -> new Seance(
-                        e.getTextContent(),
-                        "http://helios.pl" + e.getAttribute("href")
-                ))
+                .map(this::prepareSeance)
                 .collect(Collectors.toList());
+
+        return new Film(title, url, seances);
+    }
+
+    private Seance prepareSeance(Element e) {
+        String hour = e.text();
+        String seanceUrl = "http://helios.pl" + e.attr("href");
+        return new Seance(hour, seanceUrl);
     }
 
     private int daysDifference(Date d1, Date d2) {
