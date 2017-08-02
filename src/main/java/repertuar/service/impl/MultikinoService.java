@@ -2,6 +2,7 @@ package repertuar.service.impl;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import org.apache.commons.lang3.time.DateUtils;
+import org.json.JSONObject;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.Seance;
@@ -16,7 +17,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MultikinoService implements ChainService {
@@ -44,8 +47,8 @@ public class MultikinoService implements ChainService {
 
     @Override
     public List<Film> getFilms(Integer cinemaId, Date date) throws IOException {
-        return HttpUtils
-                .sendGet("https://multikino.pl/data/filmswithshowings/" + cinemaId)
+        return new JSONObject(HttpUtils
+                .sendGet("https://multikino.pl/data/filmswithshowings/" + cinemaId))
                 .getJSONArray("films")
                 .toList()
                 .stream()
