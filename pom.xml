@@ -10,7 +10,6 @@
 
     <properties>
         <commons.lang3.version>3.6</commons.lang3.version>
-        <htmlunit.version>2.27</htmlunit.version>
         <httpclient.version>4.5.3</httpclient.version>
         <json.version>20160810</json.version>
         <lombok.version>1.16.18</lombok.version>
@@ -35,11 +34,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons.lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>${htmlunit.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

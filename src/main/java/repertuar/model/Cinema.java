@@ -1,23 +1,14 @@
 package repertuar.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Collections;
-import java.util.List;
-
 @Data
+@AllArgsConstructor
 public abstract class Cinema {
-
     private Integer id;
     private String name;
     protected String url;
-    private List<SeanceDay> days = Collections.emptyList();
-
-    public Cinema(Integer id, String name, String url) {
-        this.id = id;
-        this.name = name;
-        this.url = url;
-    }
 
     @Override
     public String toString() {

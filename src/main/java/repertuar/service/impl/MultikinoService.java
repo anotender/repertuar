@@ -1,8 +1,8 @@
 package repertuar.service.impl;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.Seance;
@@ -11,7 +11,6 @@ import repertuar.model.multikino.MultikinoCinema;
 import repertuar.service.api.ChainService;
 import repertuar.utils.HttpUtils;
 import repertuar.utils.RepertoireUtils;
-import repertuar.utils.Website;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -28,14 +27,14 @@ public class MultikinoService implements ChainService {
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        return new Website("https://multikino.pl/nasze-kina")
-                .loadPageWithJavaScriptDisabled()
-                .getElementsByTagName("li")
+        return Jsoup
+                .connect("https://multikino.pl/nasze-kina")
+                .get()
+                .body()
+                .select("li.ml-columns__item")
+                .select("a")
                 .stream()
-                .filter(e -> e.hasAttribute("class"))
-                .filter(e -> e.getAttribute("class").equals("ml-columns__item"))
-                .map(DomElement::getFirstElementChild)
-                .map(e -> new MultikinoCinema(e.getTextContent(), "https://multikino.pl" + e.getAttribute("href")))
+                .map(e -> new MultikinoCinema(e.text(), "https://multikino.pl" + e.attr("href")))
                 .map(this::fetchCinemaId)
                 .collect(Collectors.toList());
     }
@@ -62,10 +61,11 @@ public class MultikinoService implements ChainService {
 
     private MultikinoCinema fetchCinemaId(MultikinoCinema c) {
         try {
-            String stringId = new Website(c.getUrl() + "/repertuar")
-                    .loadPageWithJavaScriptDisabled()
-                    .getBody()
-                    .getAttribute("data-selected-locationid");
+            String stringId = Jsoup
+                    .connect(c.getUrl() + "/repertuar")
+                    .get()
+                    .body()
+                    .attr("data-selected-locationid");
 
             c.setId(Integer.parseInt(stringId));
         } catch (Exception ignored) {

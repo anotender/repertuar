@@ -1,24 +1,19 @@
 package repertuar.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import repertuar.utils.Website;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class Film {
     private String title;
-    private Website website;
+    private String url;
     private List<Seance> seances;
 
     public Film(String title, List<Seance> seances) {
         this(title, null, seances);
-    }
-
-    public Film(String title, String url, List<Seance> seances) {
-        this.title = title;
-        this.website = new Website(url);
-        this.seances = seances;
     }
 
     @Override

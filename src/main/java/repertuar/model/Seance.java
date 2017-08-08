@@ -1,20 +1,16 @@
 package repertuar.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import repertuar.utils.Website;
 
 @Data
+@AllArgsConstructor
 public class Seance {
     private String hour;
-    private Website website;
+    private String url;
 
     public Seance(String hour) {
         this(hour, null);
-    }
-
-    public Seance(String hour, String url) {
-        this.hour = hour;
-        this.website = new Website(url);
     }
 
     @Override

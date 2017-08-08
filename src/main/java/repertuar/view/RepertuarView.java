@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import repertuar.controller.RepertuarController;
 import repertuar.model.*;
+import repertuar.utils.RepertoireUtils;
 
 import java.util.Date;
 
@@ -77,7 +78,7 @@ public class RepertuarView {
             Seance seance = seances.getSelectionModel().getSelectedItem();
             if (seance != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 try {
-                    seance.getWebsite().open();
+                    RepertoireUtils.openWebsite(seance.getUrl());
                 } catch (Exception e) {
                     showErrorInfo(e);
                 }
@@ -87,7 +88,7 @@ public class RepertuarView {
             Seance seance = seances.getSelectionModel().getSelectedItem();
             if (seance != null && event.getCode().equals(KeyCode.ENTER)) {
                 try {
-                    seance.getWebsite().open();
+                    RepertoireUtils.openWebsite(seance.getUrl());
                 } catch (Exception e) {
                     showErrorInfo(e);
                 }

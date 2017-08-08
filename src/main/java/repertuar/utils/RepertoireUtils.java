@@ -3,6 +3,10 @@ package repertuar.utils;
 import org.apache.commons.lang3.time.DateUtils;
 import repertuar.model.SeanceDay;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +24,10 @@ public class RepertoireUtils {
                         )
                 )
                 .collect(Collectors.toList());
+    }
+
+    public static void openWebsite(String url) throws IOException, URISyntaxException {
+        Desktop.getDesktop().browse(new URL(url).toURI());
     }
 
 }
