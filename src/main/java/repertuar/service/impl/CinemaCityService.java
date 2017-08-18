@@ -22,12 +22,13 @@ import java.util.stream.Collectors;
 
 public class CinemaCityService implements ChainService {
 
-    private DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    private final String baseUrl = "https://www.cinema-city.pl/";
+    private final DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
         return new JSONArray(HttpUtils
-                .sendGet("https://www.cinema-city.pl/pgm-sites"))
+                .sendGet(baseUrl + "pgm-sites"))
                 .toList()
                 .stream()
                 .map(Map.class::cast)
@@ -46,7 +47,7 @@ public class CinemaCityService implements ChainService {
         params.put("si", cinemaID.toString());
 
         return new JSONArray(HttpUtils
-                .sendGet("https://www.cinema-city.pl/pgm-site", params))
+                .sendGet(baseUrl + "pgm-site", params))
                 .toList()
                 .stream()
                 .map(Map.class::cast)
@@ -59,7 +60,7 @@ public class CinemaCityService implements ChainService {
     private CinemaCityCinema prepareCinema(Map m) {
         Integer id = Integer.parseInt(m.get("id").toString());
         String name = m.get("n").toString();
-        String url = "https://www.cinema-city.pl" + m.get("url").toString();
+        String url = baseUrl + m.get("url").toString();
         return new CinemaCityCinema(id, name, url);
     }
 

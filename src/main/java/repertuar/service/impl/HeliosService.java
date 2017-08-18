@@ -18,9 +18,11 @@ import java.util.stream.Collectors;
 
 public class HeliosService implements ChainService {
 
+    private final String baseUrl = "http://helios.pl/";
+
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        return Jsoup.connect("http://helios.pl")
+        return Jsoup.connect(baseUrl)
                 .get()
                 .body()
                 .select("section.cinema-list")
@@ -38,7 +40,7 @@ public class HeliosService implements ChainService {
 
     @Override
     public List<Film> getFilms(Integer cinemaID, Date date) throws IOException {
-        return Jsoup.connect("http://helios.pl/" + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
+        return Jsoup.connect(baseUrl + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
                 .get()
                 .body()
                 .select("li.seance")
@@ -48,7 +50,7 @@ public class HeliosService implements ChainService {
     }
 
     private Cinema prepareCinema(Element e) {
-        String url = "http://helios.pl" + e.attr("href");
+        String url = baseUrl + e.attr("href");
         Integer id = Integer.parseInt(e.attr("href").substring(1, e.attr("href").indexOf(",")));
         String name = e.select("strong").text() + e.select("span").text().replace("Helios", "");
         return new HeliosCinema(id, name, url);
@@ -56,7 +58,7 @@ public class HeliosService implements ChainService {
 
     private Film prepareFilm(Element e) {
         String title = e.select("h2.movie-title").text();
-        String url = "http://helios.pl" + e.select("a.movie-link").attr("href");
+        String url = baseUrl + e.select("a.movie-link").attr("href");
         List<Seance> seances = e
                 .select("a.hour-link.fancybox-reservation")
                 .stream()
@@ -68,7 +70,7 @@ public class HeliosService implements ChainService {
 
     private Seance prepareSeance(Element e) {
         String hour = e.text();
-        String seanceUrl = "http://helios.pl" + e.attr("href");
+        String seanceUrl = baseUrl + e.attr("href");
         return new Seance(hour, seanceUrl);
     }
 

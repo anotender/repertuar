@@ -23,18 +23,19 @@ import java.util.stream.Collectors;
 
 public class MultikinoService implements ChainService {
 
-    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    private final String baseUrl = "https://multikino.pl/";
+    private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
         return Jsoup
-                .connect("https://multikino.pl/nasze-kina")
+                .connect(baseUrl + "nasze-kina")
                 .get()
                 .body()
                 .select("li.ml-columns__item")
                 .select("a")
                 .stream()
-                .map(e -> new MultikinoCinema(e.text(), "https://multikino.pl" + e.attr("href")))
+                .map(e -> new MultikinoCinema(e.text(), baseUrl + e.attr("href")))
                 .map(this::fetchCinemaId)
                 .collect(Collectors.toList());
     }
@@ -47,7 +48,7 @@ public class MultikinoService implements ChainService {
     @Override
     public List<Film> getFilms(Integer cinemaId, Date date) throws IOException {
         return new JSONObject(HttpUtils
-                .sendGet("https://multikino.pl/data/filmswithshowings/" + cinemaId))
+                .sendGet(baseUrl + "data/filmswithshowings/" + cinemaId))
                 .getJSONArray("films")
                 .toList()
                 .stream()
@@ -96,10 +97,8 @@ public class MultikinoService implements ChainService {
     private Seance prepareSeance(Map m, int filmId, int cinemaId) {
         String versionId = m.get("version_id").toString();
         String sessionId = m.get("session_id").toString();
-        return new Seance(
-                m.get("time").toString(),
-                "https://multikino.pl/kupbilet/" + filmId + "/" + cinemaId + "/" + versionId + "/" + sessionId + "/wybierz-miejsce"
-        );
+        String seanceUrl = baseUrl + "kupbilet/" + filmId + "/" + cinemaId + "/" + versionId + "/" + sessionId + "/wybierz-miejsce";
+        return new Seance(m.get("time").toString(), seanceUrl);
     }
 
     private Film prepareFilm(Map m, int cinemaId, Date date) {
@@ -118,10 +117,6 @@ public class MultikinoService implements ChainService {
                 .map(s -> prepareSeance(s, filmId, cinemaId))
                 .collect(Collectors.toList());
 
-        return new Film(
-                m.get("title").toString(),
-                "https://multikino.pl" + m.get("filmlink").toString(),
-                seances
-        );
+        return new Film(m.get("title").toString(), baseUrl + m.get("filmlink").toString(), seances);
     }
 }
