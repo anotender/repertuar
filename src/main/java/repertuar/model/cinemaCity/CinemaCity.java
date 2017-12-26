@@ -1,6 +1,8 @@
 package repertuar.model.cinemaCity;
 
 import repertuar.model.Chain;
+import repertuar.service.api.ChainService;
+import repertuar.service.factory.ServiceFactory;
 
 public class CinemaCity extends Chain {
 
@@ -8,4 +10,8 @@ public class CinemaCity extends Chain {
         super(name, url);
     }
 
+    @Override
+    public ChainService getService() {
+        return ServiceFactory.getCinemaCityService();
+    }
 }

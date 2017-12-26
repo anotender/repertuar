@@ -7,7 +7,6 @@ import repertuar.model.SeanceDay;
 import repertuar.model.cinemaCity.CinemaCity;
 import repertuar.model.helios.Helios;
 import repertuar.model.multikino.Multikino;
-import repertuar.service.factory.ServiceFactory;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -26,23 +25,14 @@ public class RepertuarController {
     }
 
     public List<Cinema> getCinemas(Chain chain) throws Exception {
-        return ServiceFactory
-                .getService(chain)
-                .orElseThrow(Exception::new)
-                .getCinemas();
+        return chain.getService().getCinemas();
     }
 
     public List<SeanceDay> getSeanceDays(Cinema cinema) throws Exception {
-        return ServiceFactory
-                .getService(cinema)
-                .orElseThrow(Exception::new)
-                .getSeanceDays(cinema.getId());
+        return cinema.getService().getSeanceDays(cinema.getId());
     }
 
     public List<Film> getFilms(Cinema cinema, Date date) throws Exception {
-        return ServiceFactory
-                .getService(cinema)
-                .orElseThrow(Exception::new)
-                .getFilms(cinema.getId(), date);
+        return cinema.getService().getFilms(cinema.getId(), date);
     }
 }

@@ -165,7 +165,6 @@ public class RepertuarView {
             Platform.runLater(() -> cinemas.setItems(filteredList));
         } catch (Exception e) {
             showErrorInfo(e);
-            e.printStackTrace();
         }
     }
 
@@ -175,7 +174,6 @@ public class RepertuarView {
             seanceDays.getSelectionModel().selectFirst();
         } catch (Exception e) {
             showErrorInfo(e);
-            e.printStackTrace();
         }
     }
 
@@ -192,7 +190,6 @@ public class RepertuarView {
             Platform.runLater(() -> films.setItems(filteredList));
         } catch (Exception e) {
             showErrorInfo(e);
-            e.printStackTrace();
         }
     }
 

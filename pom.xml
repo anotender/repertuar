@@ -9,11 +9,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <commons.lang3.version>3.6</commons.lang3.version>
-        <httpclient.version>4.5.3</httpclient.version>
-        <json.version>20160810</json.version>
+        <commons.lang3.version>3.7</commons.lang3.version>
+        <httpclient.version>4.5.4</httpclient.version>
+        <json.version>20171018</json.version>
         <lombok.version>1.16.18</lombok.version>
-        <jsoup.version>1.10.3</jsoup.version>
+        <jsoup.version>1.11.2</jsoup.version>
     </properties>
 
     <build>
