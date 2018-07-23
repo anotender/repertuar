@@ -17,7 +17,6 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF); /* comment out to turn off annoying htmlunit warnings */
         launch(args);
     }
 }
