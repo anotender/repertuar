@@ -1,8 +1,8 @@
-package repertuar.model.cinemaCity;
+package repertuar.model.cinemacity;
 
 import repertuar.model.Cinema;
 import repertuar.service.api.ChainService;
-import repertuar.service.factory.ServiceFactory;
+import repertuar.service.impl.CinemaCityService;
 
 public class CinemaCityCinema extends Cinema {
 
@@ -12,6 +12,6 @@ public class CinemaCityCinema extends Cinema {
 
     @Override
     public ChainService getService() {
-        return ServiceFactory.getCinemaCityService();
+        return CinemaCityService.getInstance();
     }
 }

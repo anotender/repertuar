@@ -117,6 +117,6 @@ public class MultikinoService implements ChainService {
                 .map(s -> prepareSeance(s, filmId, cinemaId))
                 .collect(Collectors.toList());
 
-        return new Film(m.get("title").toString(), baseUrl + m.get("filmlink").toString(), seances);
+        return new Film("", m.get("title").toString(), baseUrl + m.get("filmlink").toString(), seances);
     }
 }

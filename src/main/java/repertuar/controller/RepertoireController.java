@@ -4,24 +4,22 @@ import repertuar.model.Chain;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.SeanceDay;
-import repertuar.model.cinemaCity.CinemaCity;
+import repertuar.model.cinemacity.CinemaCity;
 import repertuar.model.helios.Helios;
 import repertuar.model.multikino.Multikino;
 
+import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
-public class RepertuarController {
+public class RepertoireController {
 
     public List<Chain> getChains() {
-        List<Chain> chains = new LinkedList<>();
-
-        chains.add(new Helios("Helios", "http://helios.pl"));
-        chains.add(new Multikino("Multikino", "https://multikino.pl"));
-        chains.add(new CinemaCity("Cinema City", "https://cinema-city.pl/"));
-
-        return chains;
+        return Arrays.asList(
+                new Helios("Helios", "http://helios.pl"),
+                new Multikino("Multikino", "https://multikino.pl"),
+                new CinemaCity("Cinema City", "https://cinema-city.pl/")
+        );
     }
 
     public List<Cinema> getCinemas(Chain chain) throws Exception {

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "328050",
+    "filmId": "2645s2r",
+    "cinemaId": "1090",
+    "businessDay": "2018-07-24",
+    "eventDateTime": "2018-07-24T10:00:00",
+    "attributeIds": [
+      "2d",
+      "adventure",
+      "animation",
+      "dubbed",
+      "dubbed-lang-pl",
+      "family",
+      "na"
+    ],
+    "bookingLink": "/ecom-tickets?tid=1090&prsntId=328050",
+    "soldOut": false
+  },
+  {
+    "id": "328163",
+    "filmId": "2645s2r",
+    "cinemaId": "1090",
+    "businessDay": "2018-07-24",
+    "eventDateTime": "2018-07-24T10:00:00",
+    "attributeIds": [
+      "2d",
+      "animation",
+      "comedy",
+      "dubbed",
+      "dubbed-lang-pl",
+      "family",
+      "na"
+    ],
+    "bookingLink": "/ecom-tickets?tid=1090&prsntId=328163",
+    "soldOut": false
+  },
+  {
+    "id": "328585",
+    "filmId": "2871s2r",
+    "cinemaId": "1090",
+    "businessDay": "2018-07-24",
+    "eventDateTime": "2018-07-24T10:00:00",
+    "attributeIds": [
+      "2d",
+      "adventure",
+      "animation",
+      "dubbed",
+      "dubbed-lang-pl",
+      "family",
+      "na"
+    ],
+    "bookingLink": "/ecom-tickets?tid=1090&prsntId=328585",
+    "soldOut": false
+  },
+  {
+    "id": "328717",
+    "filmId": "2871s2r",
+    "cinemaId": "1090",
+    "businessDay": "2018-07-24",
+    "eventDateTime": "2018-07-24T10:00:00",
+    "attributeIds": [
+      "2d",
+      "documentary",
+      "first-subbed-lang-pl",
+      "musical",
+      "na",
+      "original-lang-en-us",
+      "subbed"
+    ],
+    "bookingLink": "/ecom-tickets?tid=1090&prsntId=328717",
+    "soldOut": false
+  },
+  {
+    "id": "328312",
+    "filmId": "2871s2r",
+    "cinemaId": "1090",
+    "businessDay": "2018-07-24",
+    "eventDateTime": "2018-07-24T10:10:00",
+    "attributeIds": [
+      "3d",
+      "adventure",
+      "dubbed",
+      "dubbed-lang-pl",
+      "na",
+      "romance",
+      "sci-fi"
+    ],
+    "bookingLink": "/ecom-tickets?tid=1090&prsntId=328312",
+    "soldOut": false
+  }
+]

@@ -12,16 +12,16 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import repertuar.controller.RepertuarController;
+import repertuar.controller.RepertoireController;
 import repertuar.model.*;
 import repertuar.utils.RepertoireUtils;
 
 import java.util.Date;
 
-public class RepertuarView {
+public class RepertoireView {
 
     private Stage primaryStage;
-    private RepertuarController controller;
+    private RepertoireController controller;
     private BorderPane chainAndCinemasPane = new BorderPane();
     private BorderPane seanceDayAndFilmsPane = new BorderPane();
     private ComboBox<Chain> chains = new ComboBox<>();
@@ -32,7 +32,7 @@ public class RepertuarView {
     private TextField cinemaFilterField = new TextField();
     private TextField filmFilterField = new TextField();
 
-    public RepertuarView(Stage primaryStage, RepertuarController controller) {
+    public RepertoireView(Stage primaryStage, RepertoireController controller) {
         this.primaryStage = primaryStage;
         this.controller = controller;
 

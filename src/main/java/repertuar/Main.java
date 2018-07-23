@@ -2,16 +2,16 @@ package repertuar;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import repertuar.controller.RepertuarController;
-import repertuar.view.RepertuarView;
+import repertuar.controller.RepertoireController;
+import repertuar.view.RepertoireView;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        RepertuarController controller = new RepertuarController();
-        RepertuarView view = new RepertuarView(primaryStage, controller);
+        RepertoireController controller = new RepertoireController();
+        RepertoireView view = new RepertoireView(primaryStage, controller);
 
     }
 

@@ -65,7 +65,7 @@ public class HeliosService implements ChainService {
                 .map(this::prepareSeance)
                 .collect(Collectors.toList());
 
-        return new Film(title, url, seances);
+        return new Film("", title, url, seances);
     }
 
     private Seance prepareSeance(Element e) {

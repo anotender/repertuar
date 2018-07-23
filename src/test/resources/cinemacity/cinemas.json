@@ -1,0 +1,46 @@
+{
+  "body": {
+    "cinemas": [
+      {
+        "id": "1088",
+        "groupId": "bielsko-biala",
+        "displayName": "Bielsko-Biała",
+        "link": "/kina/bielsko-biala",
+        "address": "ul. Leszczyńska 20, 43-300, Bielsko-Biała",
+        "bookingUrl": "https://s8.cinema-city.pl/BookingType?key=PLBielskoBialaPOW",
+        "blockOnlineSales": false,
+        "blockOnlineSalesUntil": null
+      },
+      {
+        "id": "1086",
+        "groupId": "bydgoszcz",
+        "displayName": "Bydgoszcz",
+        "link": "/kina/bydgoszcz",
+        "address": "ul. Jagiellońska 39-47, 85-097, Bydgoszcz",
+        "bookingUrl": "https://s8.cinema-city.pl/BookingType?key=PLBydgoszczPOW",
+        "blockOnlineSales": false,
+        "blockOnlineSalesUntil": null
+      },
+      {
+        "id": "1092",
+        "groupId": "bytom",
+        "displayName": "Bytom",
+        "link": "/kina/bytom",
+        "address": "pl. T. Kościuszki 1, 41-902, Bytom",
+        "bookingUrl": "https://s8.cinema-city.pl/BookingType?key=PLBytomPOW",
+        "blockOnlineSales": false,
+        "blockOnlineSalesUntil": null
+      },
+      {
+        "id": "1089",
+        "groupId": "czestochowa",
+        "displayName": "Częstochowa - Galeria Jurajska",
+        "link": "/kina/jurajska",
+        "address": "al. Wojska Polskiego 207, 42-200, Częstochowa",
+        "bookingUrl": "https://s8.cinema-city.pl/BookingType?key=PLJurajskaPOW",
+        "blockOnlineSales": false,
+        "blockOnlineSalesUntil": null
+      }
+    ]
+  }
+}

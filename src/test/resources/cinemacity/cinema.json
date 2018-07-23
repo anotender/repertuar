@@ -1,0 +1,10 @@
+{
+  "id": "1088",
+  "groupId": "bielsko-biala",
+  "displayName": "Bielsko-Biała",
+  "link": "/kina/bielsko-biala",
+  "address": "ul. Leszczyńska 20, 43-300, Bielsko-Biała",
+  "bookingUrl": "https://s8.cinema-city.pl/BookingType?key=PLBielskoBialaPOW",
+  "blockOnlineSales": false,
+  "blockOnlineSalesUntil": null
+}
