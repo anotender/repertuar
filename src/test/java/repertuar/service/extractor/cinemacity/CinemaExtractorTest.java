@@ -17,7 +17,7 @@ public class CinemaExtractorTest {
     private final Function<JSONObject, Cinema> cinemaExtractor = new CinemaExtractor();
 
     @Test
-    public void shouldReturnFilmObjectForGivenJSONObject() throws IOException {
+    public void shouldReturnCinemaCityCinemaObjectForGivenJSONObject() throws IOException {
         //given
         String json = IOUtils.toString(this.getClass().getResourceAsStream("/cinemacity/cinema.json"), "UTF-8");
         JSONObject jsonObject = new JSONObject(json);

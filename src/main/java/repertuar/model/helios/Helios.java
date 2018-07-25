@@ -6,6 +6,8 @@ import repertuar.service.factory.ServiceFactory;
 
 public class Helios extends Chain {
 
+    public static final String BASE_URL = "http://helios.pl";
+
     public Helios(String name, String url) {
         super(name, url);
     }
