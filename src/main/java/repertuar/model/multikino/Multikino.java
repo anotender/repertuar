@@ -2,7 +2,7 @@ package repertuar.model.multikino;
 
 import repertuar.model.Chain;
 import repertuar.service.api.ChainService;
-import repertuar.service.factory.ServiceFactory;
+import repertuar.service.impl.MultikinoService;
 
 public class Multikino extends Chain {
 
@@ -12,6 +12,6 @@ public class Multikino extends Chain {
 
     @Override
     public ChainService getService() {
-        return ServiceFactory.getMultikinoService();
+        return MultikinoService.getInstance();
     }
 }

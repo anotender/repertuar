@@ -19,8 +19,20 @@ import java.util.function.Function;
 
 public class HeliosService implements ChainService {
 
+    private static ChainService INSTANCE;
+
     private final Function<Document, List<Cinema>> cinemasExtractor = new CinemasExtractor();
     private final Function<Document, List<Film>> filmsExtractor = new FilmsExtractor();
+
+    private HeliosService() {
+    }
+
+    public static ChainService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new HeliosService();
+        }
+        return INSTANCE;
+    }
 
     @Override
     public List<Cinema> getCinemas() throws IOException {

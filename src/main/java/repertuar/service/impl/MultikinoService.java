@@ -23,8 +23,20 @@ import java.util.stream.Collectors;
 
 public class MultikinoService implements ChainService {
 
+    private static ChainService INSTANCE;
+
     private final String baseUrl = "https://multikino.pl/";
     private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+    private MultikinoService() {
+    }
+
+    public static ChainService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new MultikinoService();
+        }
+        return INSTANCE;
+    }
 
     @Override
     public List<Cinema> getCinemas() throws IOException {

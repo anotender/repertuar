@@ -2,7 +2,7 @@ package repertuar.model.helios;
 
 import repertuar.model.Cinema;
 import repertuar.service.api.ChainService;
-import repertuar.service.factory.ServiceFactory;
+import repertuar.service.impl.HeliosService;
 
 public class HeliosCinema extends Cinema {
 
@@ -12,6 +12,6 @@ public class HeliosCinema extends Cinema {
 
     @Override
     public ChainService getService() {
-        return ServiceFactory.getHeliosService();
+        return HeliosService.getInstance();
     }
 }
