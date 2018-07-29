@@ -14,7 +14,7 @@ public class SeanceExtractor implements Function<Element, Seance> {
     }
 
     private String getSeanceUrl(Element element) {
-        return Helios.BASE_URL + "/" + element.attr("href");
+        return Helios.BASE_URL + element.attr("href");
     }
 
 }

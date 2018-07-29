@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import repertuar.controller.RepertoireController;
 import repertuar.model.*;
-import repertuar.utils.RepertoireUtils;
 
 import java.util.Date;
 
@@ -74,27 +73,6 @@ public class RepertoireView {
         seanceDayAndFilmsPane.setCenter(films);
         seanceDayAndFilmsPane.setBottom(filmFilterField);
 
-        seances.setOnMouseClicked(event -> {
-            Seance seance = seances.getSelectionModel().getSelectedItem();
-            if (seance != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                try {
-                    RepertoireUtils.openWebsite(seance.getUrl());
-                } catch (Exception e) {
-                    showErrorInfo(e);
-                }
-            }
-        });
-        seances.setOnKeyPressed(event -> {
-            Seance seance = seances.getSelectionModel().getSelectedItem();
-            if (seance != null && event.getCode().equals(KeyCode.ENTER)) {
-                try {
-                    RepertoireUtils.openWebsite(seance.getUrl());
-                } catch (Exception e) {
-                    showErrorInfo(e);
-                }
-            }
-        });
-
         SplitPane splitPane = new SplitPane(chainAndCinemasPane, seanceDayAndFilmsPane, seances);
         splitPane.setDividerPositions(1.0 / 3.0, 2.0 / 3.0);
 
@@ -113,7 +91,7 @@ public class RepertoireView {
         chains.valueProperty().addListener((observable, oldValue, newValue) -> {
             Task task = new Task() {
                 @Override
-                protected Object call() throws Exception {
+                protected Object call() {
                     Platform.runLater(() -> {
                         chainAndCinemasPane.setCenter(new ProgressIndicator());
                         clearFilms();
@@ -135,7 +113,7 @@ public class RepertoireView {
             if (newValue != null) {
                 Task task = new Task() {
                     @Override
-                    protected Object call() throws Exception {
+                    protected Object call() {
                         Platform.runLater(() -> {
                             seanceDayAndFilmsPane.setCenter(new ProgressIndicator());
                             clearSeances();
