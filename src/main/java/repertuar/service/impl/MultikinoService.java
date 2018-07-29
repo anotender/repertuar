@@ -53,7 +53,7 @@ public class MultikinoService implements ChainService {
     }
 
     @Override
-    public List<SeanceDay> getSeanceDays(Integer cinemaId) throws IOException {
+    public List<SeanceDay> getSeanceDays(Integer cinemaId) {
         return RepertoireUtils.getSeanceDays(5);
     }
 
