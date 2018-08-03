@@ -3,12 +3,13 @@ package repertuar.service.impl;
 import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.Seance;
 import repertuar.model.SeanceDay;
-import repertuar.model.multikino.MultikinoCinema;
 import repertuar.service.api.ChainService;
+import repertuar.service.extractor.multikino.CinemasExtractor;
 import repertuar.utils.HttpUtils;
 import repertuar.utils.RepertoireUtils;
 
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MultikinoService implements ChainService {
@@ -27,6 +29,7 @@ public class MultikinoService implements ChainService {
 
     private final String baseUrl = "https://multikino.pl/";
     private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    private final Function<Document, List<Cinema>> cinemasExtractor = new CinemasExtractor();
 
     private MultikinoService() {
     }
@@ -40,16 +43,10 @@ public class MultikinoService implements ChainService {
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        return Jsoup
+        Document cinemasDocument = Jsoup
                 .connect(baseUrl + "nasze-kina")
-                .get()
-                .body()
-                .select("li.ml-columns__item")
-                .select("a")
-                .stream()
-                .map(e -> new MultikinoCinema(e.text(), baseUrl + e.attr("href")))
-                .map(this::fetchCinemaId)
-                .collect(Collectors.toList());
+                .get();
+        return cinemasExtractor.apply(cinemasDocument);
     }
 
     @Override
@@ -70,20 +67,6 @@ public class MultikinoService implements ChainService {
                 .filter(m -> matchesDate(m, date))
                 .map(m -> prepareFilm(m, cinemaId, date))
                 .collect(Collectors.toList());
-    }
-
-    private MultikinoCinema fetchCinemaId(MultikinoCinema c) {
-        try {
-            String stringId = Jsoup
-                    .connect(c.getUrl() + "/repertuar")
-                    .get()
-                    .body()
-                    .attr("data-selected-locationid");
-
-            c.setId(Integer.parseInt(stringId));
-        } catch (Exception ignored) {
-        }
-        return c;
     }
 
     private boolean matchesDate(Map m, Date date) {

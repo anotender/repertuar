@@ -6,8 +6,8 @@ import repertuar.service.impl.MultikinoService;
 
 public class MultikinoCinema extends Cinema {
 
-    public MultikinoCinema(String name, String url) {
-        super(null, name, url);
+    public MultikinoCinema(Integer id, String name, String url) {
+        super(id, name, url);
     }
 
     @Override
