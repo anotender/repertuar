@@ -1,5 +1,6 @@
 package repertuar.service.impl;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,12 +14,13 @@ import repertuar.utils.HttpUtils;
 import repertuar.utils.RepertoireUtils;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
 
 public class MultikinoService implements ChainService {
 
@@ -26,7 +28,7 @@ public class MultikinoService implements ChainService {
 
     private final String baseUrl = "https://multikino.pl/";
     private final Function<Document, List<Cinema>> cinemasExtractor = new CinemasExtractor();
-    private final BiFunction<JSONObject, Date, List<Film>> filmsExtractor = new FilmsExtractor();
+    private final BiFunction<JSONArray, Date, List<Film>> filmsExtractor = new FilmsExtractor();
 
     private MultikinoService() {
     }
@@ -43,7 +45,11 @@ public class MultikinoService implements ChainService {
         Document cinemasDocument = Jsoup
                 .connect(baseUrl + "nasze-kina")
                 .get();
-        return cinemasExtractor.apply(cinemasDocument);
+        return cinemasExtractor
+                .apply(cinemasDocument)
+                .stream()
+                .sorted(comparing(Cinema::getName))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -53,9 +59,10 @@ public class MultikinoService implements ChainService {
 
     @Override
     public List<Film> getFilms(Integer cinemaId, Date date) throws IOException {
-        JSONObject filmsJSONObject = new JSONObject(HttpUtils
-                .sendGet(baseUrl + "data/filmswithshowings/" + cinemaId));
-        return filmsExtractor.apply(filmsJSONObject, date);
+        JSONArray filmsJSONArray = new JSONObject(HttpUtils
+                .sendGet(baseUrl + "data/filmswithshowings/" + cinemaId))
+                .getJSONArray("films");
+        return filmsExtractor.apply(filmsJSONArray, date);
     }
 
 }
