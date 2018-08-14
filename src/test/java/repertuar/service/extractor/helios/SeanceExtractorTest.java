@@ -1,25 +1,23 @@
 package repertuar.service.extractor.helios;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.junit.Test;
 import repertuar.model.Seance;
+import repertuar.service.extractor.HTMLExtractorTest;
 
 import java.io.IOException;
 import java.util.function.Function;
 
-import static org.assertj.core.api.BDDAssertions.*;
+import static org.assertj.core.api.BDDAssertions.then;
 
-public class SeanceExtractorTest {
+public class SeanceExtractorTest extends HTMLExtractorTest {
 
     private final Function<Element, Seance> seanceExtractor = new SeanceExtractor();
 
     @Test
     public void shouldReturnSeanceObjectForGivenHTMLElement() throws IOException {
         //given
-        String html = IOUtils.toString(this.getClass().getResourceAsStream("/helios/seance.html"), "UTF-8");
-        Element htmlSeanceElement = Jsoup.parse(html).body().selectFirst("a");
+        Element htmlSeanceElement = getResource("/helios/seance.html").body().selectFirst("a");
 
         //when
         Seance seance = seanceExtractor.apply(htmlSeanceElement);

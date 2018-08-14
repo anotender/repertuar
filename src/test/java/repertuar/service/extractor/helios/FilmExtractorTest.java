@@ -1,25 +1,23 @@
 package repertuar.service.extractor.helios;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.junit.Test;
 import repertuar.model.Film;
+import repertuar.service.extractor.HTMLExtractorTest;
 
 import java.io.IOException;
 import java.util.function.Function;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class FilmExtractorTest {
+public class FilmExtractorTest extends HTMLExtractorTest {
 
     private final Function<Element, Film> filmExtractor = new FilmExtractor();
 
     @Test
     public void shouldReturnFilmObjectForGivenHTMLElement() throws IOException {
         //given
-        String html = IOUtils.toString(this.getClass().getResourceAsStream("/helios/film.html"), "UTF-8");
-        Element htmlFilmElement = Jsoup.parse(html).body().selectFirst("li");
+        Element htmlFilmElement = getResource("/helios/film.html").body().selectFirst("li");
 
         //when
         Film film = filmExtractor.apply(htmlFilmElement);

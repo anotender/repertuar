@@ -1,24 +1,23 @@
 package repertuar.service.extractor.cinemacity;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 import repertuar.model.Film;
+import repertuar.service.extractor.JSONExtractorTest;
 
 import java.io.IOException;
 import java.util.function.Function;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
-public class FilmExtractorTest {
+public class FilmExtractorTest extends JSONExtractorTest {
 
     private final Function<JSONObject, Film> filmExtractor = new FilmExtractor();
 
     @Test
     public void shouldReturnFilmObjectForGivenJSONObject() throws IOException {
         //given
-        String json = IOUtils.toString(this.getClass().getResourceAsStream("/cinemacity/film.json"), "UTF-8");
-        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonObject = getResource("/cinemacity/film.json");
 
         //when
         Film film = filmExtractor.apply(jsonObject);
