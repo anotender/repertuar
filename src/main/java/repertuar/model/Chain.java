@@ -8,7 +8,6 @@ import repertuar.service.api.ChainService;
 @AllArgsConstructor
 public abstract class Chain {
     private String name;
-    private String url;
 
     public abstract ChainService getService();
 

@@ -8,8 +8,8 @@ public class CinemaCity extends Chain {
 
     public static final String BASE_URL = "https://www.cinema-city.pl";
 
-    public CinemaCity(String name, String url) {
-        super(name, url);
+    public CinemaCity() {
+        super("Cinema City");
     }
 
     @Override

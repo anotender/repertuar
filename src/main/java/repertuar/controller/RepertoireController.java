@@ -15,11 +15,7 @@ import java.util.List;
 public class RepertoireController {
 
     public List<Chain> getChains() {
-        return Arrays.asList(
-                new Helios("Helios", "http://helios.pl"),
-                new Multikino("Multikino", "https://multikino.pl"),
-                new CinemaCity("Cinema City", "https://cinema-city.pl/")
-        );
+        return Arrays.asList(new Helios(), new Multikino(), new CinemaCity());
     }
 
     public List<Cinema> getCinemas(Chain chain) throws Exception {
