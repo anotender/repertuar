@@ -18,10 +18,10 @@ public class CinemaExtractorTest extends HTMLExtractorTest {
     @Test
     public void shouldReturnHeliosCinemaObjectForGivenHTMLElement() throws IOException {
         //given
-        Element htmlCinemaElement = getResource("/helios/cinema.html").body().selectFirst("a");
+        Element cinemaElement = getResource("/helios/cinema.html").body().selectFirst("a");
 
         //when
-        Cinema cinema = cinemaExtractor.apply(htmlCinemaElement);
+        Cinema cinema = cinemaExtractor.apply(cinemaElement);
 
         //then
         then(cinema)

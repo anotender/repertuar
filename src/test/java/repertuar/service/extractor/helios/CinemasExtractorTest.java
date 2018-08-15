@@ -19,10 +19,10 @@ public class CinemasExtractorTest extends HTMLExtractorTest {
     @Test
     public void shouldReturnListOfHeliosCinemasForGivenHTMLDocument() throws IOException {
         //given
-        Document htmlCinemasDocument = getResource("/helios/cinemas.html");
+        Document cinemasDocument = getResource("/helios/cinemas.html");
 
         //when
-        List<Cinema> cinemas = cinemasExtractor.apply(htmlCinemasDocument);
+        List<Cinema> cinemas = cinemasExtractor.apply(cinemasDocument);
 
         //then
         then(cinemas)

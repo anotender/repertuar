@@ -17,10 +17,10 @@ public class FilmExtractorTest extends HTMLExtractorTest {
     @Test
     public void shouldReturnFilmObjectForGivenHTMLElement() throws IOException {
         //given
-        Element htmlFilmElement = getResource("/helios/film.html").body().selectFirst("li");
+        Element filmElement = getResource("/helios/film.html").body().selectFirst("li");
 
         //when
-        Film film = filmExtractor.apply(htmlFilmElement);
+        Film film = filmExtractor.apply(filmElement);
 
         //then
         then(film).isNotNull();

@@ -17,10 +17,10 @@ public class SeanceExtractorTest extends HTMLExtractorTest {
     @Test
     public void shouldReturnSeanceObjectForGivenHTMLElement() throws IOException {
         //given
-        Element htmlSeanceElement = getResource("/helios/seance.html").body().selectFirst("a");
+        Element seanceElement = getResource("/helios/seance.html").body().selectFirst("a");
 
         //when
-        Seance seance = seanceExtractor.apply(htmlSeanceElement);
+        Seance seance = seanceExtractor.apply(seanceElement);
 
         //then
         then(seance).isNotNull();

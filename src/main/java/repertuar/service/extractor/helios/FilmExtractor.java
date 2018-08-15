@@ -28,7 +28,7 @@ public class FilmExtractor implements Function<Element, Film> {
     }
 
     private String getTitle(Element element) {
-        return element.select("h2.movie-title").text();
+        return element.select("h2.movie-title").select("a").text();
     }
 
 }
