@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <guava.version>26.0-jre</guava.version>
         <commons.io.version>2.6</commons.io.version>
         <commons.lang3.version>3.7</commons.lang3.version>
         <httpclient.version>4.5.6</httpclient.version>
@@ -33,6 +34,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
