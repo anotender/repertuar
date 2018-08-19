@@ -138,7 +138,6 @@ class FilmsView extends BorderPane {
         seanceDays.setItems(FXCollections.emptyObservableList());
     }
 
-
     @Subscribe
     private void handleChainChangeEvent(ChainChangeEvent chainChangeEvent) {
         clearFilms();

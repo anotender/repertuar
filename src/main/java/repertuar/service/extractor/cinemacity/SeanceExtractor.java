@@ -2,9 +2,10 @@ package repertuar.service.extractor.cinemacity;
 
 import org.json.JSONObject;
 import repertuar.model.Seance;
-import repertuar.model.cinemacity.CinemaCity;
 
 import java.util.function.Function;
+
+import static repertuar.model.Chain.CINEMA_CITY;
 
 public class SeanceExtractor implements Function<JSONObject, Seance> {
 
@@ -12,7 +13,7 @@ public class SeanceExtractor implements Function<JSONObject, Seance> {
     public Seance apply(JSONObject jsonObject) {
         return new Seance(
                 jsonObject.getString("eventDateTime"),
-                CinemaCity.BASE_URL + jsonObject.getString("bookingLink")
+                CINEMA_CITY.getBaseUrl() + jsonObject.getString("bookingLink")
         );
     }
 

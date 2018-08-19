@@ -4,11 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import repertuar.model.Film;
 import repertuar.model.Seance;
-import repertuar.model.multikino.Multikino;
 
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
+
+import static repertuar.model.Chain.MULTIKINO;
 
 public class FilmExtractor implements BiFunction<JSONObject, Date, Film> {
 
@@ -19,7 +20,7 @@ public class FilmExtractor implements BiFunction<JSONObject, Date, Film> {
         return new Film(
                 filmJSONObject.getString("id"),
                 filmJSONObject.getString("title"),
-                Multikino.BASE_URL + filmJSONObject.getString("filmlink"),
+                MULTIKINO.getBaseUrl() + filmJSONObject.getString("filmlink"),
                 seancesExtractor.apply(filmJSONObject.getJSONArray("showings"), date)
         );
     }

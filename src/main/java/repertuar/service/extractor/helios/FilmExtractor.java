@@ -3,10 +3,11 @@ package repertuar.service.extractor.helios;
 import org.jsoup.nodes.Element;
 import repertuar.model.Film;
 import repertuar.model.Seance;
-import repertuar.model.helios.Helios;
 
 import java.util.List;
 import java.util.function.Function;
+
+import static repertuar.model.Chain.HELIOS;
 
 public class FilmExtractor implements Function<Element, Film> {
 
@@ -24,7 +25,7 @@ public class FilmExtractor implements Function<Element, Film> {
     }
 
     private String getUrl(Element element) {
-        return Helios.BASE_URL + "/" + element.select("a.movie-link").attr("href");
+        return HELIOS.getBaseUrl() + "/" + element.select("a.movie-link").attr("href");
     }
 
     private String getTitle(Element element) {

@@ -2,9 +2,10 @@ package repertuar.service.extractor.helios;
 
 import org.jsoup.nodes.Element;
 import repertuar.model.Seance;
-import repertuar.model.helios.Helios;
 
 import java.util.function.Function;
+
+import static repertuar.model.Chain.HELIOS;
 
 public class SeanceExtractor implements Function<Element, Seance> {
 
@@ -14,7 +15,7 @@ public class SeanceExtractor implements Function<Element, Seance> {
     }
 
     private String getSeanceUrl(Element element) {
-        return Helios.BASE_URL + element.attr("href");
+        return HELIOS.getBaseUrl() + element.attr("href");
     }
 
 }

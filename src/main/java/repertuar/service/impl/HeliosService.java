@@ -6,7 +6,6 @@ import org.jsoup.nodes.Document;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.SeanceDay;
-import repertuar.model.helios.Helios;
 import repertuar.service.api.ChainService;
 import repertuar.service.extractor.helios.CinemasExtractor;
 import repertuar.service.extractor.helios.FilmsExtractor;
@@ -16,6 +15,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
+
+import static repertuar.model.Chain.HELIOS;
 
 public class HeliosService implements ChainService {
 
@@ -36,7 +37,7 @@ public class HeliosService implements ChainService {
 
     @Override
     public List<Cinema> getCinemas() throws IOException {
-        Document cinemasDocument = Jsoup.connect(Helios.BASE_URL).get();
+        Document cinemasDocument = Jsoup.connect(HELIOS.getBaseUrl()).get();
         return cinemasExtractor.apply(cinemasDocument);
     }
 
@@ -48,7 +49,7 @@ public class HeliosService implements ChainService {
     @Override
     public List<Film> getFilms(Integer cinemaID, Date date) throws IOException {
         Document filmsDocument = Jsoup
-                .connect(Helios.BASE_URL + "/" + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
+                .connect(HELIOS.getBaseUrl() + "/" + cinemaID + "/Repertuar/index/dzien/" + daysDifference(new Date(), date))
                 .get();
 
         return filmsExtractor.apply(filmsDocument);

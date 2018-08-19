@@ -20,6 +20,7 @@ import repertuar.model.Cinema;
 import repertuar.view.event.ChainChangeEvent;
 import repertuar.view.event.CinemaChangeEvent;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 class CinemasView extends BorderPane {
@@ -48,7 +49,7 @@ class CinemasView extends BorderPane {
     private ComboBox<Chain> createChainsComboBox() {
         ComboBox<Chain> chainComboBox = new ComboBox<>();
 
-        chainComboBox.setItems(FXCollections.observableList(controller.getChains()));
+        chainComboBox.setItems(FXCollections.observableList(Arrays.asList(Chain.values())));
         chainComboBox.setMaxWidth(Double.MAX_VALUE);
         chainComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             Task task = new Task() {
@@ -96,7 +97,7 @@ class CinemasView extends BorderPane {
 
     private void loadCinemas(Chain chain) {
         try {
-            ObservableList<Cinema> baseList = FXCollections.observableList(controller.getCinemas(chain));
+            ObservableList<Cinema> baseList = FXCollections.observableList(chain.getCinemas());
             FilteredList<Cinema> filteredList = new FilteredList<>(baseList, c -> true);
             cinemaFilterField.textProperty().addListener((observable, oldValue, newValue) ->
                     filteredList.setPredicate(c ->

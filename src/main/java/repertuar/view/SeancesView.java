@@ -19,7 +19,6 @@ class SeancesView extends ListView<Seance> {
         setItems(FXCollections.observableList(film.getSeances()));
     }
 
-
     private void clearSeances() {
         setItems(FXCollections.emptyObservableList());
     }

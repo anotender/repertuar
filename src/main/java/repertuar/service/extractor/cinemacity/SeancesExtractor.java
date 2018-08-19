@@ -3,7 +3,6 @@ package repertuar.service.extractor.cinemacity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import repertuar.model.Seance;
-import repertuar.model.cinemacity.CinemaCity;
 
 import java.util.List;
 import java.util.function.BiFunction;
