@@ -14,7 +14,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
-import repertuar.controller.RepertoireController;
 import repertuar.model.Chain;
 import repertuar.model.Cinema;
 import repertuar.view.event.ChainChangeEvent;
@@ -26,16 +25,14 @@ import java.util.function.Consumer;
 class CinemasView extends BorderPane {
 
     private final EventBus eventBus;
-    private final RepertoireController controller;
     private final Consumer<Exception> exceptionHandler;
     private final ComboBox<Chain> chains;
     private final ListView<Cinema> cinemas;
     private final TextField cinemaFilterField;
 
-    CinemasView(final EventBus eventBus, final RepertoireController controller, final Consumer<Exception> exceptionHandler) {
+    CinemasView(final EventBus eventBus, final Consumer<Exception> exceptionHandler) {
         super();
         this.eventBus = eventBus;
-        this.controller = controller;
         this.exceptionHandler = exceptionHandler;
         this.chains = createChainsComboBox();
         this.cinemas = createCinemasListView();

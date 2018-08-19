@@ -5,7 +5,6 @@ import org.junit.Test;
 import repertuar.model.Cinema;
 import repertuar.model.cinemacity.CinemaCityCinema;
 import repertuar.service.extractor.JSONExtractorTest;
-import repertuar.service.impl.CinemaCityService;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -40,10 +39,6 @@ public class CinemaExtractorTest extends JSONExtractorTest {
         then(cinema.getUrl())
                 .isNotBlank()
                 .isEqualTo("https://www.cinema-city.pl/kina/bielsko-biala");
-
-        then(cinema.getService())
-                .isNotNull()
-                .isInstanceOf(CinemaCityService.class);
     }
 
 }

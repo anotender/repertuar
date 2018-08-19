@@ -15,7 +15,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import org.apache.commons.lang3.StringUtils;
-import repertuar.controller.RepertoireController;
 import repertuar.model.Cinema;
 import repertuar.model.Film;
 import repertuar.model.SeanceDay;
@@ -30,16 +29,14 @@ import java.util.function.Consumer;
 class FilmsView extends BorderPane {
 
     private final EventBus eventBus;
-    private final RepertoireController controller;
     private final Consumer<Exception> exceptionHandler;
     private final ComboBox<SeanceDay> seanceDays;
     private final ListView<Film> films;
     private final TextField filmFilterField;
     private Cinema currentCinema;
 
-    FilmsView(final EventBus eventBus, final RepertoireController controller, final Consumer<Exception> exceptionHandler) {
+    FilmsView(final EventBus eventBus, final Consumer<Exception> exceptionHandler) {
         this.eventBus = eventBus;
-        this.controller = controller;
         this.exceptionHandler = exceptionHandler;
         this.seanceDays = createSeanceDayComboBox();
         this.films = createFilmsListView();
@@ -107,7 +104,7 @@ class FilmsView extends BorderPane {
 
     private void loadFilms(Cinema cinema, Date date) {
         try {
-            ObservableList<Film> baseList = FXCollections.observableList(controller.getFilms(cinema, date));
+            ObservableList<Film> baseList = FXCollections.observableList(cinema.getFilms(date));
             FilteredList<Film> filteredList = new FilteredList<>(baseList, c -> true);
             filmFilterField.textProperty().addListener((observable, oldValue, newValue) ->
                     filteredList.setPredicate(
@@ -123,7 +120,7 @@ class FilmsView extends BorderPane {
 
     private void loadSeanceDays(Cinema cinema) {
         try {
-            seanceDays.setItems(FXCollections.observableList(controller.getSeanceDays(cinema)));
+            seanceDays.setItems(FXCollections.observableList(cinema.getSeanceDays()));
             seanceDays.getSelectionModel().selectFirst();
         } catch (Exception e) {
             exceptionHandler.accept(e);

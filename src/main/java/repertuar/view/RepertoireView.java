@@ -6,19 +6,18 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import repertuar.controller.RepertoireController;
 import repertuar.model.Seance;
 
 import java.util.function.Consumer;
 
 public class RepertoireView {
 
-    public RepertoireView(Stage primaryStage, RepertoireController controller) {
+    public RepertoireView(Stage primaryStage) {
         EventBus eventBus = new EventBus();
 
         Consumer<Exception> exceptionHandler = new ExceptionHandler();
-        BorderPane cinemasView = new CinemasView(eventBus, controller, exceptionHandler);
-        BorderPane filmsView = new FilmsView(eventBus, controller, exceptionHandler);
+        BorderPane cinemasView = new CinemasView(eventBus, exceptionHandler);
+        BorderPane filmsView = new FilmsView(eventBus, exceptionHandler);
         ListView<Seance> seancesView = new SeancesView();
 
         eventBus.register(filmsView);
