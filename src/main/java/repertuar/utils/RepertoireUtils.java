@@ -26,8 +26,4 @@ public class RepertoireUtils {
                 .collect(Collectors.toList());
     }
 
-    public static void openWebsite(String url) throws IOException, URISyntaxException {
-        Desktop.getDesktop().browse(new URL(url).toURI());
-    }
-
 }
